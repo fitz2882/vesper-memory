@@ -1,0 +1,63 @@
+services:
+  # Vector Database for embeddings and semantic search
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: ${VESPER_PREFIX:-vesper}-qdrant
+    ports:
+      - "127.0.0.1:${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - ${VESPER_HOME:-~/.vesper}/docker-data/qdrant:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      - vesper-network
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo -e \"GET /healthz HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" > /dev/tcp/localhost/6333'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Cache layer and working memory
+  redis:
+    image: redis:7-alpine
+    container_name: ${VESPER_PREFIX:-vesper}-redis
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ${VESPER_HOME:-~/.vesper}/docker-data/redis:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - vesper-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # BGE-large Embedding Service
+  embedding:
+    build:
+      context: ./embedding-service
+      dockerfile: Dockerfile
+    container_name: ${VESPER_PREFIX:-vesper}-embedding
+    ports:
+      - "127.0.0.1:${EMBEDDING_PORT:-8000}:8000"
+    restart: unless-stopped
+    networks:
+      - vesper-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  vesper-network:
+    driver: bridge
+
+# Note: Volume mounts use ${VESPER_HOME:-~/.vesper}/docker-data/
+# to persist data in user-level storage instead of Docker named volumes.
+# This enables data portability and easier backup.

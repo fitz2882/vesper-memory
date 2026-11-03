@@ -1,0 +1,119 @@
+# Dependencies
+node_modules/
+yarn.lock
+pnpm-lock.yaml
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+*.tgz
+
+# Runtime
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+.cache/
+.eslintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Development/Orchestration docs (internal only)
+ORCHESTRATION_*.md
+HANDOFF_*.md
+CRITICAL_FIXES.md
+HIGH_PRIORITY_FIXES_COMPLETE.md
+PRODUCTION_READY_SUMMARY.md
+ALL_PHASES_COMPLETE.md
+
+# SSL Certificates (users generate their own)
+config/ssl/*.pem
+config/ssl/*.key
+config/ssl/*.crt
+!config/ssl/README.md
+
+# Data directories
+data/
+dump.rdb
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Backup files
+*.backup
+*.bak
+
+# Docker volumes and runtime data
+docker-data/
+docker-volumes/
+prometheus-data/
+grafana-data/
+alertmanager-data/
+qdrant-data/
+
+# API keys and secrets
+api-keys.txt
+secrets.txt
+*.pem.key
+
+# Monitoring configs with secrets
+config/grafana/provisioning/datasources/*.yaml
+!config/grafana/provisioning/datasources/datasource.yml
+
+# Test artifacts
+test-results/
+playwright-report/
+*.spec.ts.snap
+
+# Other
+vesper-article.md
+articles/
+.claude/settings.local.json
+.claude/*.local.json
+logos/
+
+# Project management (session-specific)
+.pm/
+
+# Auto-generated benchmark results
+benchmarks/results.md
+benchmarks/scientific-results.md
+
+# Local per-developer MCP config (copy from .claude/mcp_config.example.json)
+.claude/mcp_config.json

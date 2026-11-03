@@ -1,0 +1,97 @@
+{
+  "name": "vesper-memory",
+  "version": "0.6.0",
+  "description": "AI memory system for Claude Code - Three-layer architecture with semantic search, knowledge graphs, and intelligent retrieval",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "main": "dist/server.js",
+  "bin": {
+    "vesper": "dist/cli.js",
+    "vesper-server": "dist/server-wrapper.js"
+  },
+  "files": [
+    "dist/",
+    "config/",
+    "embedding-service/",
+    "scripts/",
+    "docker-compose.yml",
+    ".env.example",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude-code",
+    "claude",
+    "ai-memory",
+    "semantic-memory",
+    "semantic-search",
+    "knowledge-graph",
+    "embeddings",
+    "rag",
+    "retrieval-augmented-generation",
+    "vector-database",
+    "qdrant",
+    "redis",
+    "bge-embeddings",
+    "typescript"
+  ],
+  "author": "David Fitzsimmons",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fitz2882/vesper-memory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fitz2882/vesper-memory/issues"
+  },
+  "homepage": "https://github.com/fitz2882/vesper-memory#readme",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js",
+    "dev": "node --loader ts-node/esm src/server.ts",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc",
+    "build:global": "npm run build && npm install -g .",
+    "reinstall": "npm install -g .",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "benchmark": "vitest run tests/benchmarks/memory-performance.test.ts",
+    "benchmark:scientific": "vitest run tests/benchmark/",
+    "benchmark:unit": "vitest run tests/benchmark/statistics.test.ts tests/benchmark/types.test.ts tests/benchmark/metrics-collector.test.ts",
+    "benchmark:real": "npx tsx scripts/run-real-benchmark.ts",
+    "benchmark:accuracy": "npx tsx scripts/run-accuracy-benchmark.ts",
+    "lint": "eslint src tests",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "init:qdrant": "npx tsx scripts/init-qdrant.ts",
+    "fresh-install": "./scripts/fresh-install.sh",
+    "fresh-install:auto": "./scripts/fresh-install-auto.sh"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@qdrant/js-client-rest": "^1.16.2",
+    "better-sqlite3": "^12.11.1",
+    "ioredis": "^5.3.2",
+    "lru-cache": "^10.4.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.6",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "bintrees": "^1.0.2",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.2",
+    "prettier": "^3.1.1",
+    "tsx": "^4.23.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.18",
+    "yaml": "^2.8.2"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "vesper": {
+      "command": "node",
+      "args": [
+        "/Users/YOUR_USER/.vesper/dist/server.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

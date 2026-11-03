@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "vesper-dev": {
+      "command": "node",
+      "args": ["/absolute/path/to/vesper-memory/dist/server.js"],
+      "env": {
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6380",
+        "QDRANT_URL": "http://localhost:6334",
+        "SQLITE_DB": "/absolute/path/to/home/.vesper-dev/data/memory.db",
+        "EMBEDDING_SERVICE_URL": "http://localhost:8001",
+        "NODE_ENV": "development",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}

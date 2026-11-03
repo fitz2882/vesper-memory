@@ -1,0 +1,80 @@
+MIT License
+
+Copyright (c) 2026 David Fitzsimmons and Vesper Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Third-Party Software Attributions
+
+This software includes or is built upon the following third-party components:
+
+### Core Dependencies (MIT License)
+
+**HippoRAG**
+Copyright (c) 2024 OSU-NLP-Group
+https://github.com/OSU-NLP-Group/HippoRAG
+
+**FlagEmbedding (BGE Models)**
+Copyright (c) Beijing Academy of Artificial Intelligence (BAAI)
+https://github.com/FlagOpen/FlagEmbedding
+
+**Voyager**
+Copyright (c) MineDojo
+https://github.com/MineDojo/Voyager
+
+**better-sqlite3**
+Copyright (c) 2017 Joshua Wise
+https://github.com/WiseLibs/better-sqlite3
+
+**ioredis**
+https://github.com/redis/ioredis
+
+**@modelcontextprotocol/sdk**
+https://github.com/modelcontextprotocol/typescript-sdk
+
+### Apache 2.0 Licensed Components
+
+**Qdrant Vector Database**
+Apache License 2.0
+https://github.com/qdrant/qdrant
+
+**@qdrant/js-client-rest**
+Apache License 2.0
+https://github.com/qdrant/qdrant-js
+
+### Standalone Services (Not Distributed)
+
+**SQLite** - Public Domain (https://www.sqlite.org)
+**Redis** - AGPLv3 for v8+ (https://redis.io)
+
+Users are responsible for ensuring compliance with the licenses of any
+standalone services they choose to deploy alongside this software.
+
+### Academic Research Inspirations
+
+This software implements concepts from:
+- HippoRAG (Bernal et al., NeurIPS 2024)
+- Hippocampal Indexing Theory (Teyler & Rudy, 2007)
+- Word2Vec (Mikolov et al., 2013)
+- Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)
+- Voyager (Wang et al., 2023)
+
+See README.md Research & Credits section for complete citations.
