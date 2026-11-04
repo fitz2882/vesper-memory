@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `--client claude|codex|all` for `vesper install`, `vesper configure` and `vesper init`. Claude Code stays the default. For Codex, Vesper writes the `[mcp_servers.vesper]` table in `$CODEX_HOME/config.toml` (default `~/.codex`) and a marked rules block in `$CODEX_HOME/AGENTS.md`. Both edits are idempotent, keep a `.vesper-backup` copy, and are refused rather than guessed when the file is not valid TOML, defines `vesper` inline, or would change outside Vesper's table. `vesper uninstall` removes both, and `vesper status` reports the Codex registration.
+
 ## [0.6.1] - 2026-11-04
 
 ### Changed

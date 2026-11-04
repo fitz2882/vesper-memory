@@ -14,7 +14,22 @@ import { fileURLToPath } from 'url';
 import { randomBytes } from 'crypto';
 import { createInterface } from 'readline';
 import { getSqlitePath, getVesperHome, ensureDirectories } from './utils/paths.js';
-import { registerClaudeMcpServer } from './utils/claude-mcp-config.js';
+import { buildVesperServerEnv, registerClaudeMcpServer } from './utils/claude-mcp-config.js';
+import {
+  CodexConfigError,
+  codexAgentsPath,
+  codexConfigPath,
+  getCodexHome,
+  hasCodexServer,
+  hasUnmanagedVesperRules,
+  installCodexRules,
+  installCodexServer,
+  parseClients,
+  uninstallCodexRules,
+  uninstallCodexServer,
+  type FileChange,
+  type McpClient,
+} from './utils/codex-config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -63,6 +78,53 @@ function generatePassword(): string {
 }
 
 // Check if Docker is running
+function reportFileChange(change: FileChange, what: string) {
+  if (change.status === 'unchanged') {
+    success(`${what} already up to date (${change.path})`);
+  } else if (change.status === 'absent') {
+    info(`${what}: nothing to remove in ${change.path}`);
+  } else {
+    success(`${what} ${change.status} (${change.path})`);
+  }
+  if (change.backupPath) info(`Previous version saved to ${change.backupPath}`);
+}
+
+function commandExists(command: string): boolean {
+  try {
+    execFileSync(command, ['--version'], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Register Vesper with Codex by editing only the [mcp_servers.vesper] table of config.toml
+function configureCodex(serverPath: string, environment: Record<string, string>) {
+  info('Configuring Codex MCP integration...');
+  const codexHome = getCodexHome();
+  if (!existsSync(codexHome) && !commandExists('codex')) {
+    warning(`Codex not detected (no ${codexHome} and no codex on PATH); writing its config anyway`);
+  }
+  try {
+    reportFileChange(installCodexServer({ serverPath, environment }, codexHome), 'Codex MCP config');
+  } catch (err) {
+    if (err instanceof CodexConfigError) {
+      error(err.message);
+      error(`Codex config: ${codexConfigPath(codexHome)}`);
+    }
+    throw err;
+  }
+}
+
+function claudeCliOrExit() {
+  if (!commandExists('claude')) {
+    error('Claude Code CLI not found in PATH');
+    error('Please install Claude Code from: https://claude.ai/download');
+    error('To set up only Codex, run the command again with --client codex');
+    throw new Error('Claude CLI not found');
+  }
+}
+
 function checkDocker(): boolean {
   try {
     execSync('docker info', { stdio: 'ignore' });
@@ -73,11 +135,14 @@ function checkDocker(): boolean {
 }
 
 // Install Vesper
-async function install() {
-  header('🌟 Installing Vesper - AI Memory System for Claude Code');
+async function install(clients: McpClient[]) {
+  header('🌟 Installing Vesper - AI Memory System for coding agents');
 
   // Check prerequisites
   info('Checking prerequisites...');
+
+  // Fail before any setup work if the Claude Code CLI is needed but missing
+  if (clients.includes('claude')) claudeCliOrExit();
 
   try {
     execSync('node --version', { stdio: 'ignore' });
@@ -175,17 +240,40 @@ async function install() {
   info('Waiting for services to be ready...');
   await new Promise(resolve => setTimeout(resolve, 10000));
 
+  const serverPath = join(INSTALL_DIR, 'dist', 'server.js');
+
+  if (clients.includes('codex')) {
+    configureCodex(serverPath, { NODE_ENV: 'production' });
+  }
+
+  if (clients.includes('claude')) {
+    installClaude(serverPath);
+  }
+
+  // Success message
+  header('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  success('✨ Vesper installation complete!');
+  header('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+  const clientNames = clients.map((c) => (c === 'claude' ? 'Claude Code' : 'Codex')).join(' and ');
+  log('\n🎯 Next steps:', colors.bright);
+  log(`   1. Restart ${clientNames} to load Vesper`);
+  log(`   2. Run: vesper init --client ${clients.length > 1 ? 'all' : clients[0]}   (memory usage rules)`);
+  log('   3. Test it: "Store a memory: I love TypeScript"');
+
+  log('\n📖 Documentation:', colors.bright);
+  log(`   • Installation: ${INSTALL_DIR}`);
+  if (clients.includes('claude')) log(`   • View Claude Code config: claude mcp get vesper`);
+  if (clients.includes('codex')) log(`   • View Codex config: ${codexConfigPath()} ([mcp_servers.vesper])`);
+  log(`   • Logs: cd ${INSTALL_DIR} && docker-compose logs`);
+
+  log('\n💡 Tip: Ask your agent to "store a memory" to test!\n');
+}
+
+// Register Vesper with Claude Code and add its SessionStart hook
+function installClaude(serverPath: string) {
   // Configure MCP using the official claude CLI
   info('Configuring Claude Code MCP integration...');
-
-  // Check if claude CLI is available
-  try {
-    execSync('claude --version', { stdio: 'ignore' });
-  } catch {
-    error('Claude Code CLI not found in PATH');
-    error('Please install Claude Code from: https://claude.ai/download');
-    throw new Error('Claude CLI not found');
-  }
 
   // Remove old MCP server if it exists (to ensure clean install)
   try {
@@ -195,8 +283,6 @@ async function install() {
   }
 
   // Add Vesper using the proper claude mcp add command
-  const serverPath = join(INSTALL_DIR, 'dist', 'server.js');
-
   try {
     execSync(
       `claude mcp add vesper --transport stdio --scope user -e NODE_ENV=production -- node "${serverPath}"`,
@@ -251,23 +337,6 @@ async function install() {
   writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
   success('Startup hook configured');
   info('Note: Permissions are handled automatically by claude mcp add');
-
-  // Success message
-  header('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  success('✨ Vesper installation complete!');
-  header('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-  log('\n🎯 Next steps:', colors.bright);
-  log('   1. Restart Claude Code to load Vesper');
-  log('   2. Ask Claude: "What MCP servers are available?"');
-  log('   3. Test it: "Store a memory: I love TypeScript"');
-
-  log('\n📖 Documentation:', colors.bright);
-  log(`   • Installation: ${INSTALL_DIR}`);
-  log(`   • View config: claude mcp get vesper`);
-  log(`   • Logs: cd ${INSTALL_DIR} && docker-compose logs`);
-
-  log('\n💡 Tip: Ask Claude to "store a memory" to test!\n');
 }
 
 // Uninstall Vesper
@@ -300,6 +369,19 @@ async function uninstall() {
     warning('Could not remove from MCP config (may not be configured)');
   }
 
+  // Remove the Codex registration and managed rules, if any, so Codex does not launch a deleted server
+  for (const [label, remove] of [
+    ['Codex MCP config', uninstallCodexServer],
+    ['Codex rules in AGENTS.md', uninstallCodexRules],
+  ] as const) {
+    try {
+      const change = remove();
+      if (change.status !== 'absent') reportFileChange(change, label);
+    } catch (err) {
+      warning(`Could not update ${label}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   // Remove startup hook
   const settingsPath = join(homedir(), '.claude', 'settings.json');
   if (existsSync(settingsPath)) {
@@ -328,7 +410,7 @@ async function uninstall() {
   }
 
   log('\n✅ Vesper uninstalled successfully\n');
-  info('Restart Claude Code to complete removal');
+  info('Restart Claude Code or Codex to complete removal');
 }
 
 // Load environment variables from .env file
@@ -403,7 +485,7 @@ function loadEnvFile(packageRoot: string): Record<string, string> {
 }
 
 // Configure MCP only (no Docker services)
-async function configure() {
+async function configure(clients: McpClient[]) {
   header('⚙️  Configuring Vesper MCP Server');
 
   // Determine package location (could be in node_modules or ~/.vesper)
@@ -441,43 +523,41 @@ async function configure() {
     absoluteSqliteDb = getSqlitePath();
   }
 
-  info('Configuring Claude Code MCP integration...');
-
-  // Check if claude CLI is available
-  try {
-    execFileSync('claude', ['--version'], { stdio: 'ignore' });
-  } catch {
-    error('Claude Code CLI not found in PATH');
-    error('Please install Claude Code from: https://claude.ai/download');
-    throw new Error('Claude CLI not found');
+  if (clients.includes('codex')) {
+    configureCodex(serverPath, buildVesperServerEnv(envVars, absoluteSqliteDb));
   }
 
-  // Remove old MCP server if it exists (to ensure clean install)
-  try {
-    execFileSync('claude', ['mcp', 'remove', 'vesper'], { stdio: 'ignore' });
-  } catch {
-    // Ignore errors if server doesn't exist
-  }
+  if (clients.includes('claude')) {
+    info('Configuring Claude Code MCP integration...');
+    claudeCliOrExit();
 
-  try {
-    registerClaudeMcpServer(envVars, absoluteSqliteDb, serverPath);
-    success('MCP server configured successfully');
-  } catch (err) {
-    error('Failed to configure Vesper MCP server');
-    error('Correct the configuration and run vesper configure again.');
-    throw err;
+    // Remove old MCP server if it exists (to ensure clean install)
+    try {
+      execFileSync('claude', ['mcp', 'remove', 'vesper'], { stdio: 'ignore' });
+    } catch {
+      // Ignore errors if server doesn't exist
+    }
+
+    try {
+      registerClaudeMcpServer(envVars, absoluteSqliteDb, serverPath);
+      success('MCP server configured successfully');
+    } catch (err) {
+      error('Failed to configure Vesper MCP server');
+      error('Correct the configuration and run vesper configure again.');
+      throw err;
+    }
+    info('Permissions are handled automatically by claude mcp add');
   }
 
   log(`\n📍 Server path: ${serverPath}`);
   log(`📁 Package root: ${packageRoot}`);
-  info('Permissions are handled automatically by claude mcp add');
 
   success('✨ Vesper MCP server configured!');
   log('\n🎯 Next steps:', colors.bright);
   log('   1. Ensure Docker services are running:');
   log(`      cd ${packageRoot} && docker-compose up -d`);
-  log('   2. Restart Claude Code to load Vesper');
-  log('   3. Test: Ask Claude "What MCP servers are available?"\n');
+  log(`   2. Restart ${clients.map((c) => (c === 'claude' ? 'Claude Code' : 'Codex')).join(' and ')} to load Vesper`);
+  log('   3. Test: Ask "What MCP servers are available?"\n');
 }
 
 // Enable Vesper
@@ -492,7 +572,7 @@ async function enableVesper() {
 
   // Re-run configure to enable (this will add the MCP server)
   info('Reconfiguring Vesper to enable...');
-  await configure();
+  await configure(['claude']);
 
   log('\n💡 Restart Claude Code for changes to take effect\n');
 }
@@ -576,6 +656,13 @@ function status() {
     log('   Run "vesper configure" to set up');
   }
 
+  const codexConfig = codexConfigPath();
+  if (existsSync(codexConfig) && hasCodexServer(readFileSync(codexConfig, 'utf-8'))) {
+    success(`Configured in Codex (${codexConfig})`);
+  } else if (existsSync(getCodexHome())) {
+    info('Not configured in Codex. Run "vesper configure --client codex" to set up');
+  }
+
   // Check services
   log('\n🐳 Docker Services:');
   if (checkDocker()) {
@@ -619,23 +706,63 @@ function promptConfirm(question: string): Promise<boolean> {
   });
 }
 
-// Initialize Claude Code rules for optimal Vesper usage
-async function initRules() {
-  header('📋 Setting up Claude Code rules for Vesper');
+const RULE_FILES = ['vesper.md', 'memory-discipline.md'];
 
-  const rulesDir = join(homedir(), '.claude', 'rules');
-  const packageRoot = join(__dirname, '..');
-  const sourceDir = join(packageRoot, 'config', 'claude-rules');
-
-  // Verify source rules exist
-  const ruleFiles = ['vesper.md', 'memory-discipline.md'];
-  for (const file of ruleFiles) {
+// Locate the packaged rule files, exiting if the installation is broken
+function ruleSourceDir(): string {
+  const sourceDir = join(__dirname, '..', 'config', 'claude-rules');
+  for (const file of RULE_FILES) {
     if (!existsSync(join(sourceDir, file))) {
       error(`Source rule file not found: ${join(sourceDir, file)}`);
       error('This may indicate a broken installation. Try reinstalling vesper-memory.');
       process.exit(1);
     }
   }
+  return sourceDir;
+}
+
+// Initialize agent rules for optimal Vesper usage
+async function initRules(clients: McpClient[]) {
+  if (clients.includes('claude')) await initClaudeRules();
+  if (clients.includes('codex')) await initCodexRules();
+}
+
+// Put the rules in a marked block of $CODEX_HOME/AGENTS.md; re-running replaces only that block
+async function initCodexRules() {
+  header('📋 Setting up Codex rules for Vesper');
+
+  const sourceDir = ruleSourceDir();
+  const rules = RULE_FILES.map((file) => readFileSync(join(sourceDir, file), 'utf-8').trim()).join('\n\n');
+  const agentsPath = codexAgentsPath();
+
+  try {
+    if (existsSync(agentsPath) && hasUnmanagedVesperRules(readFileSync(agentsPath, 'utf-8'))) {
+      warning(`${agentsPath} already contains Vesper rules outside the managed block`);
+      info('They were probably appended by hand. Adding the managed copy would duplicate them.');
+      const proceed = await promptConfirm('Add the managed copy anyway? (remove the old copy afterwards)');
+      if (!proceed) {
+        info('Skipped AGENTS.md. Delete the hand-appended rules and re-run "vesper init --client codex".');
+        return;
+      }
+    }
+    const change = installCodexRules(rules);
+    reportFileChange(change, 'Codex rules');
+  } catch (err) {
+    if (err instanceof CodexConfigError) error(err.message);
+    throw err;
+  }
+
+  log('\n💡 Codex will now know how and when to use Vesper memory.');
+  log('   Rules take effect in new Codex sessions.\n');
+}
+
+// Copy the rule files into ~/.claude/rules/
+async function initClaudeRules() {
+  header('📋 Setting up Claude Code rules for Vesper');
+
+  const rulesDir = join(homedir(), '.claude', 'rules');
+  const sourceDir = ruleSourceDir();
+  const ruleFiles = RULE_FILES;
 
   // Create ~/.claude/rules/ if missing
   if (!existsSync(rulesDir)) {
@@ -800,9 +927,19 @@ async function migrate() {
 // Main CLI
 const command = process.argv[2];
 
+let clients: McpClient[] = ['claude'];
+if (['install', 'configure', 'init'].includes(command)) {
+  try {
+    clients = parseClients(process.argv.slice(3));
+  } catch (err) {
+    error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+}
+
 switch (command) {
   case 'install':
-    install().catch((err) => {
+    install(clients).catch((err) => {
       error(`Installation failed: ${err.message}`);
       process.exit(1);
     });
@@ -816,7 +953,7 @@ switch (command) {
     break;
 
   case 'configure':
-    configure().catch((err) => {
+    configure(clients).catch((err) => {
       error(`Configuration failed: ${err.message}`);
       process.exit(1);
     });
@@ -848,7 +985,7 @@ switch (command) {
     break;
 
   case 'init':
-    initRules().catch((err) => {
+    initRules(clients).catch((err) => {
       error(`Init failed: ${err.message}`);
       process.exit(1);
     });
@@ -859,14 +996,14 @@ switch (command) {
   case '-h':
   case undefined:
     log(`
-${colors.bright}Vesper - AI Memory System for Claude Code${colors.reset}
+${colors.bright}Vesper - AI Memory System for Claude Code and Codex${colors.reset}
 
 ${colors.bright}USAGE:${colors.reset}
-  vesper <command>
+  vesper <command> [--client claude|codex|all]
 
 ${colors.bright}COMMANDS:${colors.reset}
-  install      Install Vesper and configure Claude Code (full setup)
-  init         Set up Claude Code rules for optimal memory usage
+  install      Install Vesper and configure the client (full setup)
+  init         Set up the client's rules for optimal memory usage
   configure    Configure MCP server only (no Docker setup)
   migrate      Migrate data from old location to user-level storage
   uninstall    Remove Vesper completely
@@ -875,9 +1012,17 @@ ${colors.bright}COMMANDS:${colors.reset}
   disable      Disable Vesper memory system (pass-through mode)
   help         Show this help message
 
+${colors.bright}OPTIONS:${colors.reset}
+  --client     Which agent install, configure and init set up: claude (default),
+               codex, or all. Codex setup edits only [mcp_servers.vesper] in
+               ~/.codex/config.toml and a marked block in ~/.codex/AGENTS.md
+               (CODEX_HOME is respected) and is safe to re-run.
+
 ${colors.bright}EXAMPLES:${colors.reset}
   vesper install       # Full installation with Docker setup
   vesper init          # Install Claude Code rules for Vesper
+  vesper install --client codex   # Full installation for Codex
+  vesper init --client all        # Rules for Claude Code and Codex
   vesper configure     # Configure MCP only (lightweight)
   vesper migrate       # Move data to ~/.vesper/data/
   vesper status        # Check if running
