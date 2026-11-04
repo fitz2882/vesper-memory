@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Retrieval benchmark: held-out query set, identifier stress set, cached BGE-large embeddings (`EMBEDDINGS_FILE`) so dense and hybrid runs need no embedding service, and `benchmarks/retrieval-eval/EXPERIMENTS.md`.
 
 ### Fixed
+- `npm install -g vesper-memory` no longer runs `vesper configure` from a postinstall script. That script silently registered a second Claude Code server named `vesper` on every install or upgrade, even when Vesper was already set up under another name, and it never covered Codex. Setup is now only the explicit `vesper install` / `vesper configure` step the README already documents.
 - `vesper configure` no longer generates Redis, Qdrant and Postgres passwords when it creates `.env`. `.env.example` has no password lines, so the generated values were registered with the MCP client but never saved: each new `.env` registered new random secrets, the next run dropped them, and the bundled Docker services, which run without authentication, never used them. `.env` is now an exact copy of `.env.example`, and credentials reach the client only when you set them in `.env` yourself.
 
 ## [0.6.1] - 2026-11-04
