@@ -227,7 +227,7 @@ docker-compose up -d
 ```bash
 # Install to custom location
 export VESPER_INSTALL_DIR=~/my-custom-path
-curl -fsSL https://raw.githubusercontent.com/fitz2882/vesper/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/fitz2882/vesper-memory/main/install.sh | bash
 ```
 
 ## Next Steps

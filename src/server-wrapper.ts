@@ -202,6 +202,6 @@ async function main() {
 main().catch((err) => {
   error(`Failed to start server: ${err.message}`);
   console.error('');
-  console.error('For help, visit: https://github.com/fitz2882/vesper/issues');
+  console.error('For help, visit: https://github.com/fitz2882/vesper-memory/issues');
   process.exit(1);
 });
