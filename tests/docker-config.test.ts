@@ -233,7 +233,14 @@ describe("Docker Configuration Syntax Validation", () => {
 
     // Validate docker-compose.yml syntax
     try {
-      execSync("docker-compose config", {
+      // Compose v2 ships as a docker plugin; fall back to the legacy binary.
+      let composeCmd = "docker compose config";
+      try {
+        execSync("docker compose version", { stdio: "pipe" });
+      } catch {
+        composeCmd = "docker-compose config";
+      }
+      execSync(composeCmd, {
         cwd: path.join(__dirname, ".."),
         stdio: "pipe",
         env: {
