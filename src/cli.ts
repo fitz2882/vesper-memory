@@ -11,9 +11,9 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync, cpSync, rmSync, cop
 import { homedir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { randomBytes } from 'crypto';
 import { createInterface } from 'readline';
 import { getSqlitePath, getVesperHome, ensureDirectories } from './utils/paths.js';
+import { loadEnvFile } from './utils/env-file.js';
 import { buildVesperServerEnv, registerClaudeMcpServer } from './utils/claude-mcp-config.js';
 import {
   CodexConfigError,
@@ -70,11 +70,6 @@ function warning(message: string) {
 
 function info(message: string) {
   log(`ℹ️  ${message}`, colors.blue);
-}
-
-// Generate secure random password
-function generatePassword(): string {
-  return randomBytes(32).toString('base64');
 }
 
 // Check if Docker is running
@@ -413,77 +408,6 @@ async function uninstall() {
   info('Restart Claude Code or Codex to complete removal');
 }
 
-// Load environment variables from .env file
-// If .env doesn't exist, create it from .env.example with secure generated passwords
-function loadEnvFile(packageRoot: string): Record<string, string> {
-  const envPath = join(packageRoot, '.env');
-  const envExamplePath = join(packageRoot, '.env.example');
-
-  let envContent: string;
-  let shouldGeneratePasswords = false;
-
-  if (!existsSync(envPath)) {
-    if (existsSync(envExamplePath)) {
-      info('Creating .env from .env.example...');
-      envContent = readFileSync(envExamplePath, 'utf-8');
-      shouldGeneratePasswords = true;
-    } else {
-      warning('.env and .env.example not found, using default values');
-      return {};
-    }
-  } else {
-    envContent = readFileSync(envPath, 'utf-8');
-  }
-
-  const env: Record<string, string> = {};
-
-  // Parse environment variables
-  for (const line of envContent.split('\n')) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#')) {
-      const match = trimmed.match(/^([^=]+)=(.*)$/);
-      if (match) {
-        const [, key, value] = match;
-        env[key.trim()] = value.trim();
-      }
-    }
-  }
-
-  // Generate secure passwords if creating new .env
-  if (shouldGeneratePasswords) {
-    info('Generating secure passwords...');
-
-    const redisPassword = generatePassword();
-    const qdrantKey = generatePassword();
-    const postgresPassword = generatePassword();
-
-    // Replace placeholder passwords in content
-    envContent = envContent.replace(
-      /REDIS_PASSWORD=.*/,
-      `REDIS_PASSWORD=${redisPassword}`
-    );
-    envContent = envContent.replace(
-      /QDRANT_API_KEY=.*/,
-      `QDRANT_API_KEY=${qdrantKey}`
-    );
-    envContent = envContent.replace(
-      /POSTGRES_PASSWORD=.*/,
-      `POSTGRES_PASSWORD=${postgresPassword}`
-    );
-
-    // Write new .env file
-    writeFileSync(envPath, envContent);
-    success('.env created with secure passwords');
-
-    // Update env object with generated passwords
-    env.REDIS_PASSWORD = redisPassword;
-    env.QDRANT_API_KEY = qdrantKey;
-    env.POSTGRES_PASSWORD = postgresPassword;
-  }
-
-  return env;
-}
-
 // Configure MCP only (no Docker services)
 async function configure(clients: McpClient[]) {
   header('⚙️  Configuring Vesper MCP Server');
@@ -499,7 +423,7 @@ async function configure(clients: McpClient[]) {
   }
 
   info('Loading environment configuration...');
-  const envVars = loadEnvFile(packageRoot);
+  const envVars = loadEnvFile(packageRoot, info);
 
   // Ensure user-level data directories exist
   try {
