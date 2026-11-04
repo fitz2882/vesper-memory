@@ -1,11 +1,10 @@
 import { execFileSync } from "node:child_process";
 
-/** Register the stdio server without interpreting configuration as shell syntax. */
-export function registerClaudeMcpServer(
+/** Environment the Vesper stdio server is registered with, shared by every MCP client. */
+export function buildVesperServerEnv(
   envVars: Record<string, string>,
   absoluteSqliteDb: string,
-  serverPath: string,
-): void {
+): Record<string, string> {
   const environment: Record<string, string> = {
     REDIS_HOST: envVars.REDIS_HOST || "localhost",
     REDIS_PORT: envVars.REDIS_PORT || "6379",
@@ -30,6 +29,16 @@ export function registerClaudeMcpServer(
   ]) {
     if (envVars[key]) environment[key] = envVars[key];
   }
+  return environment;
+}
+
+/** Register the stdio server without interpreting configuration as shell syntax. */
+export function registerClaudeMcpServer(
+  envVars: Record<string, string>,
+  absoluteSqliteDb: string,
+  serverPath: string,
+): void {
+  const environment = buildVesperServerEnv(envVars, absoluteSqliteDb);
 
   // Each -e value is one argument, including spaces, quotes and shell metacharacters.
   const args = ["mcp", "add", "vesper", "--transport", "stdio", "--scope", "user"];
