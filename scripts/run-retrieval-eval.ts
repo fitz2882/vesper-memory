@@ -70,6 +70,7 @@ const K = 5;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const FIXTURE_PATH = join(process.cwd(), "benchmarks/retrieval-eval/fixtures.v1.json");
 const HELDOUT_PATH = join(process.cwd(), "benchmarks/retrieval-eval/heldout.v1.json");
+const IDENTIFIERS_PATH = join(process.cwd(), "benchmarks/retrieval-eval/identifiers.v1.json");
 const OUTPUT_DIR = join(process.cwd(), "benchmarks/retrieval-eval/results");
 
 // ---------------------------------------------------------------------------
@@ -411,19 +412,25 @@ class FileEmbedder implements Embedder {
   private readonly vectors = new Map<string, number[]>();
   readonly model: string;
 
-  constructor(path: string) {
-    const data = JSON.parse(readFileSync(path, "utf8")) as {
-      model: string;
-      vectors: Record<string, string>;
-    };
-    this.model = data.model;
-    for (const [text, encoded] of Object.entries(data.vectors)) {
-      const bytes = Buffer.from(encoded, "base64");
-      this.vectors.set(
-        text,
-        Array.from(new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4))
-      );
+  /** `paths` is one file or a comma-separated list; all must come from the same model. */
+  constructor(paths: string) {
+    const models = new Set<string>();
+    for (const path of paths.split(",").map((p) => p.trim())) {
+      const data = JSON.parse(readFileSync(path, "utf8")) as {
+        model: string;
+        vectors: Record<string, string>;
+      };
+      models.add(data.model);
+      for (const [text, encoded] of Object.entries(data.vectors)) {
+        const bytes = Buffer.from(encoded, "base64");
+        this.vectors.set(
+          text,
+          Array.from(new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4))
+        );
+      }
     }
+    if (models.size !== 1) throw new Error(`Embedding files mix models: ${[...models].join(", ")}`);
+    this.model = [...models][0];
   }
 
   async embed(text: string): Promise<number[]> {
@@ -438,13 +445,27 @@ function loadQueries(fixtures: Fixtures, set: string): FixtureQuery[] {
   if (set === "heldout") {
     return (JSON.parse(readFileSync(HELDOUT_PATH, "utf8")) as { queries: FixtureQuery[] }).queries;
   }
-  throw new Error(`Unknown QUERY_SET: ${set} (expected main or heldout)`);
+  if (set === "identifiers") return loadIdentifierSet().queries;
+  throw new Error(`Unknown QUERY_SET: ${set} (expected main, heldout or identifiers)`);
+}
+
+/** The identifier set adds near-miss memories to the v1 corpus, used only with its own queries. */
+function loadIdentifierSet(): { memories: FixtureMemory[]; queries: FixtureQuery[] } {
+  return JSON.parse(readFileSync(IDENTIFIERS_PATH, "utf8")) as {
+    memories: FixtureMemory[];
+    queries: FixtureQuery[];
+  };
 }
 
 async function main() {
   const baseFixtures = JSON.parse(readFileSync(FIXTURE_PATH, "utf8")) as Fixtures;
   const querySet = process.env.QUERY_SET || "main";
-  const fixtures: Fixtures = { ...baseFixtures, queries: loadQueries(baseFixtures, querySet) };
+  const extraMemories = querySet === "identifiers" ? loadIdentifierSet().memories : [];
+  const fixtures: Fixtures = {
+    ...baseFixtures,
+    memories: [...baseFixtures.memories, ...extraMemories],
+    queries: loadQueries(baseFixtures, querySet),
+  };
   const now = Date.parse(fixtures.reference_time);
 
   // Dense channel is optional: a cached embeddings file, a live service, or neither.
@@ -469,12 +490,21 @@ async function main() {
 
       const writePath = process.env.WRITE_EMBEDDINGS_FILE;
       if (writePath) {
+        // The identifier set has its own cache file so the v1 vectors stay untouched.
+        const identifierSet = loadIdentifierSet();
         const texts = [
-          ...new Set([
-            ...baseFixtures.memories.map((m) => m.content),
-            ...loadQueries(baseFixtures, "main").map((q) => q.query),
-            ...loadQueries(baseFixtures, "heldout").map((q) => q.query),
-          ]),
+          ...new Set(
+            querySet === "identifiers"
+              ? [
+                  ...identifierSet.memories.map((m) => m.content),
+                  ...identifierSet.queries.map((q) => q.query),
+                ]
+              : [
+                  ...baseFixtures.memories.map((m) => m.content),
+                  ...loadQueries(baseFixtures, "main").map((q) => q.query),
+                  ...loadQueries(baseFixtures, "heldout").map((q) => q.query),
+                ]
+          ),
         ];
         const vectors = await probe.embedLargeBatch(texts, 32);
         const encoded: Record<string, string> = {};

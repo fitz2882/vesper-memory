@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "notes": "Identifier stress set, written on 2026-11-04 before any run. The main set's 12 lexical queries scored 100% for every strategy, so this set adds near-miss memories (CARGO-4412 vs CARGO-4413, exit 137 vs 139, :6380 vs :5432, 3f9c2ab vs 3f9e2ab) to the v1 corpus and asks bare or lightly worded identifier queries, as an agent would. Used to decide whether hybrid or semantic should be the default; never tune against these.",
+  "memories": [
+    {
+      "id": "x-ticket-4413",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "Ticket CARGO-4413 tracks adding a dark mode toggle to the driver app settings screen.",
+      "created_days_ago": 24
+    },
+    {
+      "id": "x-ticket-4421",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "Ticket CARGO-4421: geofence polygons drawn across the antimeridian render incorrectly on the dispatch map.",
+      "created_days_ago": 18
+    },
+    {
+      "id": "x-err-econn-5432",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "ECONNREFUSED 127.0.0.1:5432 during integration tests meant the Postgres Testcontainer had not finished starting; adding a wait strategy fixed it.",
+      "created_days_ago": 30
+    },
+    {
+      "id": "x-err-sqlite-full",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "SQLITE_FULL: database or disk is full happened on the CI runner when the tmp volume filled up with test artifacts.",
+      "created_days_ago": 27
+    },
+    {
+      "id": "x-err-139",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "The address sidecar crashed with exit code 139 (segfault) after a libpostal upgrade; pinning the previous version fixed it.",
+      "created_days_ago": 26
+    },
+    {
+      "id": "x-flag-v3",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "The feature flag route_v3_shadow mirrors traffic to the experimental routing engine without serving its results.",
+      "created_days_ago": 14
+    },
+    {
+      "id": "x-file-router-test",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "Unit tests for query classification are in tests/router.test.ts.",
+      "created_days_ago": 59
+    },
+    {
+      "id": "x-version-054",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "Release v0.5.4 removed the HTTP transport and kept only stdio.",
+      "created_days_ago": 64
+    },
+    {
+      "id": "x-version-055",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "Release v0.5.5 added an optional namespace parameter to every tool.",
+      "created_days_ago": 57
+    },
+    {
+      "id": "x-sha-revert",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "Commit 3f9c2ab reverted the ETA cache TTL change after a routing quota spike.",
+      "created_days_ago": 21
+    },
+    {
+      "id": "x-sha-bump",
+      "namespace": "default",
+      "memory_type": "episodic",
+      "content": "Commit 3f9e2ab bumped the LightGBM dependency to 4.5 for the nightly retrain.",
+      "created_days_ago": 19
+    },
+    {
+      "id": "x-env-stops",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "Set ROUTING_MAX_STOPS=40 to cap stops per route; the default is 25.",
+      "created_days_ago": 36
+    },
+    {
+      "id": "x-env-drivers",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "ROUTING_MAX_DRIVERS limits concurrent drivers per optimization run and defaults to 200.",
+      "created_days_ago": 36
+    },
+    {
+      "id": "x-mapbox-env",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "MAPBOX_TOKEN_PROD holds the production Mapbox key; MAPBOX_TOKEN_DEV is the one for local development.",
+      "created_days_ago": 44
+    },
+    {
+      "id": "x-http-409",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "HTTP 409 from the shipments endpoint means the shipment version is stale; refetch and retry the update.",
+      "created_days_ago": 32
+    },
+    {
+      "id": "x-http-429",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "The carrier API returns HTTP 429 with a Retry-After header when the rate limit is hit.",
+      "created_days_ago": 31
+    },
+    {
+      "id": "x-tomasz",
+      "namespace": "default",
+      "memory_type": "semantic",
+      "content": "Tomasz Wójcik owns the dispatch service and approves its schema changes.",
+      "created_days_ago": 49
+    }
+  ],
+  "queries": [
+    {
+      "id": "id-01",
+      "family": "identifier-bare",
+      "query": "CARGO-4412",
+      "namespace": "default",
+      "relevant": ["d-ticket"]
+    },
+    {
+      "id": "id-02",
+      "family": "identifier-worded",
+      "query": "what is CARGO-4421 about",
+      "namespace": "default",
+      "relevant": ["x-ticket-4421"]
+    },
+    {
+      "id": "id-03",
+      "family": "identifier-bare",
+      "query": "ECONNREFUSED 127.0.0.1:5432",
+      "namespace": "default",
+      "relevant": ["x-err-econn-5432"]
+    },
+    {
+      "id": "id-04",
+      "family": "identifier-bare",
+      "query": "ECONNREFUSED 6380",
+      "namespace": "default",
+      "relevant": ["d-err-econn"],
+      "forbidden": ["r-err-econn"]
+    },
+    {
+      "id": "id-05",
+      "family": "identifier-bare",
+      "query": "SQLITE_FULL",
+      "namespace": "default",
+      "relevant": ["x-err-sqlite-full"]
+    },
+    {
+      "id": "id-06",
+      "family": "identifier-worded",
+      "query": "how did we fix SQLITE_BUSY",
+      "namespace": "default",
+      "relevant": ["d-err-sqlite-busy"]
+    },
+    {
+      "id": "id-07",
+      "family": "identifier-bare",
+      "query": "exit code 139",
+      "namespace": "default",
+      "relevant": ["x-err-139"]
+    },
+    {
+      "id": "id-08",
+      "family": "identifier-bare",
+      "query": "exit 137",
+      "namespace": "default",
+      "relevant": ["d-err-oom"]
+    },
+    {
+      "id": "id-09",
+      "family": "identifier-bare",
+      "query": "route_v3_shadow",
+      "namespace": "default",
+      "relevant": ["x-flag-v3"]
+    },
+    {
+      "id": "id-10",
+      "family": "identifier-worded",
+      "query": "what does route_v2_enabled default to",
+      "namespace": "default",
+      "relevant": ["d-feature-flag"]
+    },
+    {
+      "id": "id-11",
+      "family": "identifier-bare",
+      "query": "tests/router.test.ts",
+      "namespace": "default",
+      "relevant": ["x-file-router-test"]
+    },
+    {
+      "id": "id-12",
+      "family": "identifier-bare",
+      "query": "smart-router.ts",
+      "namespace": "default",
+      "relevant": ["d-file-router"],
+      "forbidden": ["v-router"]
+    },
+    {
+      "id": "id-13",
+      "family": "identifier-bare",
+      "query": "index-outbox.ts",
+      "namespace": "default",
+      "relevant": ["d-file-outbox"]
+    },
+    {
+      "id": "id-14",
+      "family": "identifier-bare",
+      "query": "v0.5.4",
+      "namespace": "default",
+      "relevant": ["x-version-054"]
+    },
+    {
+      "id": "id-15",
+      "family": "identifier-worded",
+      "query": "what changed in v0.5.5",
+      "namespace": "default",
+      "relevant": ["x-version-055"]
+    },
+    {
+      "id": "id-16",
+      "family": "identifier-bare",
+      "query": "3f9c2ab",
+      "namespace": "default",
+      "relevant": ["x-sha-revert"]
+    },
+    {
+      "id": "id-17",
+      "family": "identifier-worded",
+      "query": "what did commit 3f9e2ab do",
+      "namespace": "default",
+      "relevant": ["x-sha-bump"]
+    },
+    {
+      "id": "id-18",
+      "family": "identifier-bare",
+      "query": "ROUTING_MAX_STOPS",
+      "namespace": "default",
+      "relevant": ["x-env-stops"]
+    },
+    {
+      "id": "id-19",
+      "family": "identifier-worded",
+      "query": "default value of ROUTING_MAX_DRIVERS",
+      "namespace": "default",
+      "relevant": ["x-env-drivers"]
+    },
+    {
+      "id": "id-20",
+      "family": "identifier-bare",
+      "query": "MAPBOX_TOKEN_DEV",
+      "namespace": "default",
+      "relevant": ["x-mapbox-env"]
+    },
+    {
+      "id": "id-21",
+      "family": "identifier-worded",
+      "query": "what does a 409 from shipments mean",
+      "namespace": "default",
+      "relevant": ["x-http-409"]
+    },
+    {
+      "id": "id-22",
+      "family": "identifier-bare",
+      "query": "429 Retry-After",
+      "namespace": "default",
+      "relevant": ["x-http-429"]
+    },
+    {
+      "id": "id-23",
+      "family": "identifier-bare",
+      "query": "port 6334",
+      "namespace": "default",
+      "relevant": ["d-port-qdrant"]
+    },
+    {
+      "id": "id-24",
+      "family": "identifier-bare",
+      "query": "port 8001",
+      "namespace": "default",
+      "relevant": ["d-port-embed"]
+    },
+    {
+      "id": "id-25",
+      "family": "identifier-bare",
+      "query": "cargoctl",
+      "namespace": "default",
+      "relevant": ["d-fill-22"]
+    },
+    {
+      "id": "id-26",
+      "family": "identifier-worded",
+      "query": "who is Tomasz",
+      "namespace": "default",
+      "relevant": ["x-tomasz", "d-oncall"]
+    }
+  ]
+}
