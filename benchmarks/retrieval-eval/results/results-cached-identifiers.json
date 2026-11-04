@@ -1,0 +1,123 @@
+{
+  "fixtureVersion": 1,
+  "querySet": "identifiers",
+  "k": 5,
+  "embeddingNote": "BGE-large-en-v1.5 from cached file benchmarks/retrieval-eval/embeddings.bge-large-en-v1.5.json,benchmarks/retrieval-eval/embeddings-identifiers.bge-large-en-v1.5.json (latency excludes embedding)",
+  "latencyIncludesEmbedding": false,
+  "reports": [
+    {
+      "strategy": "full_text",
+      "overall": {
+        "queries": 26,
+        "recallAt1": 0.9230769230769231,
+        "recallAt3": 1,
+        "recallAt5": 1,
+        "mrr": 0.9551282051282051,
+        "ndcgAt5": 0.9689779386006643
+      },
+      "byFamily": {
+        "identifier-bare": {
+          "queries": 18,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "identifier-worded": {
+          "queries": 8,
+          "recallAt1": 0.75,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.8541666666666666,
+          "ndcgAt5": 0.8991783004521589
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 0,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 0,
+      "abstentionNonEmpty": 0,
+      "latencyP50Ms": 1.2842379999999878,
+      "latencyP95Ms": 1.7833880000000022,
+      "misses": []
+    },
+    {
+      "strategy": "semantic",
+      "overall": {
+        "queries": 26,
+        "recallAt1": 0.7884615384615384,
+        "recallAt3": 1,
+        "recallAt5": 1,
+        "mrr": 0.9038461538461539,
+        "ndcgAt5": 0.9259372906540567
+      },
+      "byFamily": {
+        "identifier-bare": {
+          "queries": 18,
+          "recallAt1": 0.8333333333333334,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.9166666666666666,
+          "ndcgAt5": 0.9384882922619097
+        },
+        "identifier-worded": {
+          "queries": 8,
+          "recallAt1": 0.6875,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.875,
+          "ndcgAt5": 0.8976975370363878
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 0,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 0,
+      "abstentionNonEmpty": 0,
+      "latencyP50Ms": 0.6829379999999787,
+      "latencyP95Ms": 6.839216999999991,
+      "misses": []
+    },
+    {
+      "strategy": "hybrid",
+      "overall": {
+        "queries": 26,
+        "recallAt1": 0.9423076923076923,
+        "recallAt3": 1,
+        "recallAt5": 1,
+        "mrr": 0.9807692307692307,
+        "ndcgAt5": 0.9858049905219791
+      },
+      "byFamily": {
+        "identifier-bare": {
+          "queries": 18,
+          "recallAt1": 0.9444444444444444,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.9722222222222222,
+          "ndcgAt5": 0.9794960974206366
+        },
+        "identifier-worded": {
+          "queries": 8,
+          "recallAt1": 0.9375,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 0,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 0,
+      "abstentionNonEmpty": 0,
+      "latencyP50Ms": 1.5887839999999755,
+      "latencyP95Ms": 3.233996000000019,
+      "misses": []
+    }
+  ]
+}

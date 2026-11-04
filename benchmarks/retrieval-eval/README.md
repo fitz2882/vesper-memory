@@ -8,12 +8,15 @@ EMBEDDINGS_FILE=benchmarks/retrieval-eval/embeddings.bge-large-en-v1.5.json \
   npm run benchmark:retrieval                                                    # all three, cached vectors
 EMBEDDING_SERVICE_URL=http://localhost:8000 npm run benchmark:retrieval          # all three, live service
 QUERY_SET=heldout ...                                                            # held-out queries
+QUERY_SET=identifiers EMBEDDINGS_FILE=<main file>,benchmarks/retrieval-eval/embeddings-identifiers.bge-large-en-v1.5.json ...  # identifier stress set
 RETRIEVER_OPTS='{"hybridDropsStopwords":false}' ...                              # try retriever settings
 ```
 
 The cached embeddings file holds BGE-large-en-v1.5 vectors for every fixture memory and query, so dense and hybrid results are reproducible without the model. With cached vectors, latency excludes embedding. Regenerate the file with `WRITE_EMBEDDINGS_FILE=<path>` against a live service whenever fixtures change.
 
 `heldout.v1.json` holds 30 queries over the same memories. They were written before any retriever change was tuned. Use them only to confirm a change chosen on the main set; see `EXPERIMENTS.md`.
+
+`identifiers.v1.json` adds 17 near-miss memories (neighbouring ticket ids, exit codes, ports, commit SHAs, env vars) and 26 identifier queries. It has its own embeddings file; `EMBEDDINGS_FILE` takes a comma-separated list.
 
 ## What it does
 
