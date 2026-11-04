@@ -65,6 +65,7 @@ interface Fixtures {
 const K = 5;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const FIXTURE_PATH = join(process.cwd(), "benchmarks/retrieval-eval/fixtures.v1.json");
+const HELDOUT_PATH = join(process.cwd(), "benchmarks/retrieval-eval/heldout.v1.json");
 const OUTPUT_DIR = join(process.cwd(), "benchmarks/retrieval-eval/results");
 
 // ---------------------------------------------------------------------------
@@ -397,35 +398,106 @@ function renderMarkdown(
   return lines.join("\n");
 }
 
+interface Embedder {
+  embed(text: string): Promise<number[]>;
+}
+
+/** Embeddings read from a file written by WRITE_EMBEDDINGS_FILE (float32, base64). */
+class FileEmbedder implements Embedder {
+  private readonly vectors = new Map<string, number[]>();
+  readonly model: string;
+
+  constructor(path: string) {
+    const data = JSON.parse(readFileSync(path, "utf8")) as {
+      model: string;
+      vectors: Record<string, string>;
+    };
+    this.model = data.model;
+    for (const [text, encoded] of Object.entries(data.vectors)) {
+      const bytes = Buffer.from(encoded, "base64");
+      this.vectors.set(
+        text,
+        Array.from(new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4))
+      );
+    }
+  }
+
+  async embed(text: string): Promise<number[]> {
+    const vector = this.vectors.get(text);
+    if (!vector) throw new Error(`No cached embedding for: ${text}`);
+    return vector;
+  }
+}
+
+function loadQueries(fixtures: Fixtures, set: string): FixtureQuery[] {
+  if (set === "main") return fixtures.queries;
+  if (set === "heldout") {
+    return (JSON.parse(readFileSync(HELDOUT_PATH, "utf8")) as { queries: FixtureQuery[] }).queries;
+  }
+  throw new Error(`Unknown QUERY_SET: ${set} (expected main or heldout)`);
+}
+
 async function main() {
-  const fixtures = JSON.parse(readFileSync(FIXTURE_PATH, "utf8")) as Fixtures;
+  const baseFixtures = JSON.parse(readFileSync(FIXTURE_PATH, "utf8")) as Fixtures;
+  const querySet = process.env.QUERY_SET || "main";
+  const fixtures: Fixtures = { ...baseFixtures, queries: loadQueries(baseFixtures, querySet) };
   const now = Date.parse(fixtures.reference_time);
 
-  // Dense channel is optional.
+  // Dense channel is optional: a cached embeddings file, a live service, or neither.
   const serviceUrl = process.env.EMBEDDING_SERVICE_URL || "http://localhost:8000";
-  let embeddingClient: EmbeddingClient | undefined;
+  const embeddingsFile = process.env.EMBEDDINGS_FILE;
+  let makeEmbedder: (() => Embedder) | undefined;
   let embeddingNote = "none (BM25 only)";
-  try {
-    const candidate = new EmbeddingClient({ serviceUrl, timeout: 5_000, maxRetries: 1 });
-    const health = await candidate.health();
-    embeddingClient = candidate;
-    embeddingNote = `${(health as { model?: string }).model ?? "unknown model"} via ${serviceUrl}`;
-  } catch {
-    console.log(`Embedding service not reachable at ${serviceUrl}; running BM25 only.`);
+  let latencyIncludesEmbedding = true;
+
+  if (embeddingsFile) {
+    const fileEmbedder = new FileEmbedder(embeddingsFile);
+    makeEmbedder = () => fileEmbedder;
+    embeddingNote = `${fileEmbedder.model} from cached file ${embeddingsFile} (latency excludes embedding)`;
+    latencyIncludesEmbedding = false;
+  } else {
+    try {
+      const probe = new EmbeddingClient({ serviceUrl, timeout: 5_000, maxRetries: 1 });
+      const health = await probe.health();
+      const model = (health as { model?: string }).model ?? "unknown model";
+      embeddingNote = `${model} via ${serviceUrl}`;
+      makeEmbedder = () => new EmbeddingClient({ serviceUrl, timeout: 30_000, maxRetries: 1 });
+
+      const writePath = process.env.WRITE_EMBEDDINGS_FILE;
+      if (writePath) {
+        const texts = [
+          ...new Set([
+            ...baseFixtures.memories.map((m) => m.content),
+            ...loadQueries(baseFixtures, "main").map((q) => q.query),
+            ...loadQueries(baseFixtures, "heldout").map((q) => q.query),
+          ]),
+        ];
+        const vectors = await probe.embedLargeBatch(texts, 32);
+        const encoded: Record<string, string> = {};
+        texts.forEach((text, i) => {
+          encoded[text] = Buffer.from(new Float32Array(vectors[i]).buffer).toString("base64");
+        });
+        writeFileSync(writePath, JSON.stringify({ model, vectors: encoded }));
+        console.log(`Wrote ${texts.length} embeddings to ${writePath}`);
+      }
+    } catch (error) {
+      if (process.env.WRITE_EMBEDDINGS_FILE) throw error;
+      console.log(`Embedding service not reachable at ${serviceUrl}; running BM25 only.`);
+    }
   }
 
   const strategies: RetrievalStrategy[] = ["full_text"];
   const skipped: string[] = [];
   let denseIndex: InMemoryDenseIndex | undefined;
-  if (embeddingClient) {
+  if (makeEmbedder) {
     denseIndex = new InMemoryDenseIndex();
-    const vectors = await embeddingClient.embedLargeBatch(
-      fixtures.memories.map((m) => m.content),
-      32
-    );
-    fixtures.memories.forEach((m, i) =>
-      denseIndex!.add(m.id, vectors[i], { namespace: m.namespace, memory_type: m.memory_type })
-    );
+    const docEmbedder = makeEmbedder();
+    for (const m of fixtures.memories) {
+      denseIndex.add(m.id, await docEmbedder.embed(m.content), {
+        namespace: m.namespace,
+        memory_type: m.memory_type,
+      });
+    }
     strategies.push("semantic", "hybrid");
   } else {
     skipped.push("semantic", "hybrid");
@@ -437,14 +509,12 @@ async function main() {
     // and a fresh embedding client so its query-embedding cache cannot make a later
     // strategy look faster than an earlier one.
     const db = buildDatabase(fixtures, now);
-    const queryClient = embeddingClient
-      ? new EmbeddingClient({ serviceUrl, timeout: 30_000, maxRetries: 1 })
-      : undefined;
+    const queryEmbedder = makeEmbedder?.();
     const retriever = new MemoryRetriever({
       db,
       now: () => now,
-      ...(queryClient && denseIndex
-        ? { embeddingClient: queryClient, hybridSearch: denseIndex }
+      ...(queryEmbedder && denseIndex
+        ? { embeddingClient: queryEmbedder, hybridSearch: denseIndex }
         : {}),
     });
     retriever.initialize();
@@ -463,12 +533,25 @@ async function main() {
 
   const markdown = renderMarkdown(fixtures, reports, skipped, embeddingNote);
   mkdirSync(OUTPUT_DIR, { recursive: true });
-  const suffix = embeddingClient ? "all" : "bm25";
-  writeFileSync(join(OUTPUT_DIR, `results-${suffix}.md`), markdown);
-  writeFileSync(
-    join(OUTPUT_DIR, `results-${suffix}.json`),
-    JSON.stringify({ fixtureVersion: fixtures.version, k: K, embeddingNote, reports }, null, 2)
-  );
+  const suffix = `${makeEmbedder ? "all" : "bm25"}${querySet === "main" ? "" : `-${querySet}`}`;
+  if (process.env.NO_WRITE_RESULTS !== "1") {
+    writeFileSync(join(OUTPUT_DIR, `results-${suffix}.md`), markdown);
+    writeFileSync(
+      join(OUTPUT_DIR, `results-${suffix}.json`),
+      JSON.stringify(
+        {
+          fixtureVersion: fixtures.version,
+          querySet,
+          k: K,
+          embeddingNote,
+          latencyIncludesEmbedding,
+          reports,
+        },
+        null,
+        2
+      )
+    );
+  }
   console.log(markdown);
 
   const leaks = reports.reduce((sum, r) => sum + r.namespaceLeaks, 0);
