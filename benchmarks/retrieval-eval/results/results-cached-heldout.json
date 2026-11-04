@@ -1,0 +1,345 @@
+{
+  "fixtureVersion": 1,
+  "querySet": "heldout",
+  "k": 5,
+  "embeddingNote": "BGE-large-en-v1.5 from cached file benchmarks/retrieval-eval/embeddings.bge-large-en-v1.5.json (latency excludes embedding)",
+  "latencyIncludesEmbedding": false,
+  "reports": [
+    {
+      "strategy": "full_text",
+      "overall": {
+        "queries": 28,
+        "recallAt1": 0.6785714285714286,
+        "recallAt3": 0.7142857142857143,
+        "recallAt5": 0.7857142857142857,
+        "mrr": 0.7083333333333334,
+        "ndcgAt5": 0.7271911827195281
+      },
+      "byFamily": {
+        "conversational": {
+          "queries": 8,
+          "recallAt1": 0.5,
+          "recallAt3": 0.5,
+          "recallAt5": 0.5,
+          "mrr": 0.5,
+          "ndcgAt5": 0.5
+        },
+        "paraphrase": {
+          "queries": 12,
+          "recallAt1": 0.6666666666666666,
+          "recallAt3": 0.75,
+          "recallAt5": 0.8333333333333334,
+          "mrr": 0.7152777777777777,
+          "ndcgAt5": 0.7442230465061161
+        },
+        "lexical": {
+          "queries": 5,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "distractor": {
+          "queries": 2,
+          "recallAt1": 0.5,
+          "recallAt3": 0.5,
+          "recallAt5": 1,
+          "mrr": 0.625,
+          "ndcgAt5": 0.7153382790366966
+        },
+        "longitudinal": {
+          "queries": 1,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "abstention": {
+          "queries": 0,
+          "recallAt1": 0,
+          "recallAt3": 0,
+          "recallAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 2,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 2,
+      "abstentionNonEmpty": 1,
+      "latencyP50Ms": 1.461197999999996,
+      "latencyP95Ms": 1.8844780000000014,
+      "misses": [
+        {
+          "id": "ho-01",
+          "query": "Which city am I based in?",
+          "expected": [
+            "d-name"
+          ],
+          "got": [
+            "d-fill-27",
+            "d-file-router",
+            "d-fill-31",
+            "d-fill-33",
+            "d-fill-47"
+          ]
+        },
+        {
+          "id": "ho-02",
+          "query": "What company do I work for?",
+          "expected": [
+            "d-employer"
+          ],
+          "got": [
+            "d-fill-47",
+            "d-fill-19",
+            "d-fill-27",
+            "d-fill-03",
+            "d-fill-33"
+          ]
+        },
+        {
+          "id": "ho-03",
+          "query": "Who do I report to?",
+          "expected": [
+            "d-manager"
+          ],
+          "got": [
+            "d-fill-47",
+            "d-pet",
+            "d-fill-14",
+            "d-observability",
+            "d-goal"
+          ]
+        },
+        {
+          "id": "ho-04",
+          "query": "What is my pet's name?",
+          "expected": [
+            "d-pet"
+          ],
+          "got": [
+            "d-name",
+            "d-manager",
+            "d-laptop",
+            "d-goal",
+            "d-cache-ttl"
+          ]
+        },
+        {
+          "id": "ho-12",
+          "query": "Where is the code that decides what kind of question was asked?",
+          "expected": [
+            "d-file-router"
+          ],
+          "got": [
+            "d-err-oom",
+            "d-manager",
+            "d-laptop",
+            "d-review-sla-v2",
+            "d-fill-02"
+          ]
+        },
+        {
+          "id": "ho-18",
+          "query": "Which algorithm predicts delivery arrival times?",
+          "expected": [
+            "d-ml-model"
+          ],
+          "got": [
+            "d-fill-02",
+            "d-hiring"
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "semantic",
+      "overall": {
+        "queries": 28,
+        "recallAt1": 0.8214285714285714,
+        "recallAt3": 0.8928571428571429,
+        "recallAt5": 0.9642857142857143,
+        "mrr": 0.869047619047619,
+        "ndcgAt5": 0.892581531061366
+      },
+      "byFamily": {
+        "conversational": {
+          "queries": 8,
+          "recallAt1": 0.5,
+          "recallAt3": 0.75,
+          "recallAt5": 0.875,
+          "mrr": 0.6354166666666666,
+          "ndcgAt5": 0.6952007889556063
+        },
+        "paraphrase": {
+          "queries": 12,
+          "recallAt1": 0.9166666666666666,
+          "recallAt3": 0.9166666666666666,
+          "recallAt5": 1,
+          "mrr": 0.9375,
+          "ndcgAt5": 0.9525563798394495
+        },
+        "lexical": {
+          "queries": 5,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "distractor": {
+          "queries": 2,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "longitudinal": {
+          "queries": 1,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "abstention": {
+          "queries": 0,
+          "recallAt1": 0,
+          "recallAt3": 0,
+          "recallAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 2,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 2,
+      "abstentionNonEmpty": 2,
+      "latencyP50Ms": 0.6843560000000082,
+      "latencyP95Ms": 2.2171009999999853,
+      "misses": [
+        {
+          "id": "ho-03",
+          "query": "Who do I report to?",
+          "expected": [
+            "d-manager"
+          ],
+          "got": [
+            "d-commit",
+            "d-fill-17",
+            "d-fill-08",
+            "d-review-sla-v2",
+            "d-fill-30"
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "hybrid",
+      "overall": {
+        "queries": 28,
+        "recallAt1": 0.75,
+        "recallAt3": 0.8928571428571429,
+        "recallAt5": 0.9285714285714286,
+        "mrr": 0.8226190476190476,
+        "ndcgAt5": 0.8492729309981755
+      },
+      "byFamily": {
+        "conversational": {
+          "queries": 8,
+          "recallAt1": 0.5,
+          "recallAt3": 0.75,
+          "recallAt5": 0.75,
+          "mrr": 0.6041666666666666,
+          "ndcgAt5": 0.6413662191964322
+        },
+        "paraphrase": {
+          "queries": 12,
+          "recallAt1": 0.8333333333333334,
+          "recallAt3": 0.9166666666666666,
+          "recallAt5": 1,
+          "mrr": 0.8916666666666666,
+          "ndcgAt5": 0.9181485467338333
+        },
+        "lexical": {
+          "queries": 5,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "distractor": {
+          "queries": 2,
+          "recallAt1": 0.5,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.75,
+          "ndcgAt5": 0.8154648767857287
+        },
+        "longitudinal": {
+          "queries": 1,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "abstention": {
+          "queries": 0,
+          "recallAt1": 0,
+          "recallAt3": 0,
+          "recallAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 2,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 2,
+      "abstentionNonEmpty": 2,
+      "latencyP50Ms": 1.5848680000000286,
+      "latencyP95Ms": 3.576870999999983,
+      "misses": [
+        {
+          "id": "ho-02",
+          "query": "What company do I work for?",
+          "expected": [
+            "d-employer"
+          ],
+          "got": [
+            "d-fill-27",
+            "d-fill-04",
+            "d-fill-19",
+            "d-k8s",
+            "d-review-sla-v2"
+          ]
+        },
+        {
+          "id": "ho-03",
+          "query": "Who do I report to?",
+          "expected": [
+            "d-manager"
+          ],
+          "got": [
+            "d-commit",
+            "d-fill-17",
+            "d-fill-08",
+            "d-review-sla-v2",
+            "d-fill-30"
+          ]
+        }
+      ]
+    }
+  ]
+}

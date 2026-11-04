@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-11-04
+
+### Changed
+- Hybrid retrieval drops common English stopwords from the BM25 query before rank fusion. On the retrieval benchmark, hybrid Recall@5 rose from 88.7% to 94.3% (held-out: 82.1% to 92.9%). BM25-only retrieval, including hybrid's fallback when embeddings are unavailable, still uses every token. Disable with `hybridDropsStopwords: false`.
+- `MemoryRetriever` accepts `lexicalWeight` and `denseWeight` for weighted RRF (default 1, unchanged behaviour).
+
+### Added
+- Retrieval benchmark: held-out query set, cached BGE-large embeddings (`EMBEDDINGS_FILE`) so dense and hybrid runs need no embedding service, and `benchmarks/retrieval-eval/EXPERIMENTS.md`.
+
 ## [0.6.1] - 2026-11-04
 
 ### Changed

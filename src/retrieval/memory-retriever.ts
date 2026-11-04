@@ -95,6 +95,17 @@ export interface MemoryRetrieverDependencies {
   now?: () => number;
   rrfK?: number;
   candidateMultiplier?: number;
+  /** RRF weight of the lexical (BM25) ranking in hybrid retrieval. Default 1. */
+  lexicalWeight?: number;
+  /** RRF weight of the dense ranking in hybrid retrieval. Default 1. */
+  denseWeight?: number;
+  /**
+   * Drop common English stopwords from the BM25 query when it is fused with
+   * dense results. Without this, words like "what", "is" and "my" pull noisy
+   * lexical candidates into the fusion and push good dense hits out of the top
+   * results. BM25-only retrieval keeps every token. Default true.
+   */
+  hybridDropsStopwords?: boolean;
 }
 
 interface LexicalCandidate {
@@ -146,12 +157,25 @@ const DEFAULT_CANDIDATE_MULTIPLIER = 8;
 const MAX_CANDIDATES = 800;
 const MAX_FTS_TERMS = 64;
 
+/** Common English function words that make an OR-of-tokens BM25 query match almost everything. */
+const FTS_STOPWORDS = new Set(
+  (
+    "a an and are as at be been but by can could did do does doing for from had has have " +
+    "he her hers him his how i if in into is it its me my mine myself no not of on or our " +
+    "ours she should so that the their them then there these they this those to too was we " +
+    "were what when where which who whom why will with would you your yours"
+  ).split(" ")
+);
+
 export class MemoryRetriever {
   private readonly db: Database.Database;
   private readonly embeddingClient?: Pick<EmbeddingClient, "embed">;
   private readonly hybridSearch?: Pick<HybridSearchEngine, "denseSearch">;
   private readonly now: () => number;
   private readonly rrfK: number;
+  private readonly lexicalWeight: number;
+  private readonly denseWeight: number;
+  private readonly hybridDropsStopwords: boolean;
   private readonly candidateMultiplier: number;
   private memoryColumns: Set<string> | undefined;
 
@@ -161,6 +185,17 @@ export class MemoryRetriever {
     this.hybridSearch = dependencies.hybridSearch;
     this.now = dependencies.now ?? Date.now;
     this.rrfK = dependencies.rrfK ?? DEFAULT_RRF_K;
+    this.lexicalWeight = dependencies.lexicalWeight ?? 1;
+    this.denseWeight = dependencies.denseWeight ?? 1;
+    this.hybridDropsStopwords = dependencies.hybridDropsStopwords ?? true;
+    for (const [name, weight] of [
+      ["lexicalWeight", this.lexicalWeight],
+      ["denseWeight", this.denseWeight],
+    ] as const) {
+      if (!Number.isFinite(weight) || weight < 0) {
+        throw new Error(`${name} must be a non-negative finite number`);
+      }
+    }
     this.candidateMultiplier = dependencies.candidateMultiplier ?? DEFAULT_CANDIDATE_MULTIPLIER;
 
     if (!Number.isFinite(this.rrfK) || this.rrfK <= 0) {
@@ -236,8 +271,9 @@ export class MemoryRetriever {
     const stages: RetrievalTraceStage[] = [];
 
     let lexicalCandidates: LexicalCandidate[] = [];
+    const lexicalDroppedStopwords = this.hybridDropsStopwords && effectiveStrategy === "hybrid";
     if (effectiveStrategy === "full_text" || effectiveStrategy === "hybrid") {
-      lexicalCandidates = this.lexicalSearch(normalized, candidateLimit);
+      lexicalCandidates = this.lexicalSearch(normalized, candidateLimit, lexicalDroppedStopwords);
       stages.push({
         stage: "lexical",
         candidateCount: lexicalCandidates.length,
@@ -280,6 +316,11 @@ export class MemoryRetriever {
       } else if (denseCandidates.length === 0) {
         effectiveStrategy = "full_text";
       }
+    }
+    // Stopword removal is only for fusion. If hybrid fell back to BM25 alone,
+    // rerun the lexical query with every token.
+    if (effectiveStrategy === "full_text" && lexicalDroppedStopwords) {
+      lexicalCandidates = this.lexicalSearch(normalized, candidateLimit, false);
     }
 
     const rankedCandidates = this.rankCandidates(
@@ -505,9 +546,10 @@ export class MemoryRetriever {
 
   private lexicalSearch(
     input: ReturnType<MemoryRetriever["validateInput"]>,
-    limit: number
+    limit: number,
+    dropStopwords = false
   ): LexicalCandidate[] {
-    const ftsQuery = sanitizeFtsQuery(input.query);
+    const ftsQuery = sanitizeFtsQuery(input.query, { dropStopwords });
     if (!ftsQuery) return [];
 
     // These canonical predicates reduce candidate starvation in large shared
@@ -767,7 +809,7 @@ export class MemoryRetriever {
         id: candidate.id,
         lexicalScore: candidate.score,
         lexicalRank: candidate.rank,
-        fusedScore: 1 / (this.rrfK + candidate.rank),
+        fusedScore: this.lexicalWeight / (this.rrfK + candidate.rank),
         sources: ["lexical"],
       });
     }
@@ -776,14 +818,15 @@ export class MemoryRetriever {
       if (existing) {
         existing.denseScore = candidate.score;
         existing.denseRank = candidate.rank;
-        existing.fusedScore = (existing.fusedScore ?? 0) + 1 / (this.rrfK + candidate.rank);
+        existing.fusedScore =
+          (existing.fusedScore ?? 0) + this.denseWeight / (this.rrfK + candidate.rank);
         existing.sources.push("dense");
       } else {
         fused.set(candidate.id, {
           id: candidate.id,
           denseScore: candidate.score,
           denseRank: candidate.rank,
-          fusedScore: 1 / (this.rrfK + candidate.rank),
+          fusedScore: this.denseWeight / (this.rrfK + candidate.rank),
           sources: ["dense"],
         });
       }
@@ -924,8 +967,16 @@ export class MemoryRetriever {
 }
 
 /** Convert arbitrary text into literal FTS tokens, never executable FTS syntax. */
-export function sanitizeFtsQuery(query: string): string | null {
-  const tokens = query.match(/[\p{L}\p{N}_]+/gu)?.slice(0, MAX_FTS_TERMS) ?? [];
+export function sanitizeFtsQuery(
+  query: string,
+  options: { dropStopwords?: boolean } = {}
+): string | null {
+  let tokens = query.match(/[\p{L}\p{N}_]+/gu)?.slice(0, MAX_FTS_TERMS) ?? [];
+  if (options.dropStopwords) {
+    const content = tokens.filter((token) => !FTS_STOPWORDS.has(token.toLowerCase()));
+    // A query made only of stopwords keeps its tokens rather than matching nothing.
+    if (content.length > 0) tokens = content;
+  }
   if (tokens.length === 0) return null;
   return tokens.map((token) => `"${token}"`).join(" OR ");
 }

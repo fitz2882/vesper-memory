@@ -3,9 +3,17 @@
 A frozen, hand-labelled retrieval benchmark that follows [`docs/RETRIEVAL_EVALUATION.md`](../../docs/RETRIEVAL_EVALUATION.md).
 
 ```bash
-npm run benchmark:retrieval                                        # BM25 only
-EMBEDDING_SERVICE_URL=http://localhost:8000 npm run benchmark:retrieval  # BM25, dense, hybrid
+npm run benchmark:retrieval                                                      # BM25 only
+EMBEDDINGS_FILE=benchmarks/retrieval-eval/embeddings.bge-large-en-v1.5.json \
+  npm run benchmark:retrieval                                                    # all three, cached vectors
+EMBEDDING_SERVICE_URL=http://localhost:8000 npm run benchmark:retrieval          # all three, live service
+QUERY_SET=heldout ...                                                            # held-out queries
+RETRIEVER_OPTS='{"hybridDropsStopwords":false}' ...                              # try retriever settings
 ```
+
+The cached embeddings file holds BGE-large-en-v1.5 vectors for every fixture memory and query, so dense and hybrid results are reproducible without the model. With cached vectors, latency excludes embedding. Regenerate the file with `WRITE_EMBEDDINGS_FILE=<path>` against a live service whenever fixtures change.
+
+`heldout.v1.json` holds 30 queries over the same memories. They were written before any retriever change was tuned. Use them only to confirm a change chosen on the main set; see `EXPERIMENTS.md`.
 
 ## What it does
 

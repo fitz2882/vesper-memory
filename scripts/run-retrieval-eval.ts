@@ -22,7 +22,11 @@
 import Database from "better-sqlite3";
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
-import { MemoryRetriever, type RetrievalStrategy } from "../src/retrieval/memory-retriever.js";
+import {
+  MemoryRetriever,
+  type MemoryRetrieverDependencies,
+  type RetrievalStrategy,
+} from "../src/retrieval/memory-retriever.js";
 import { EmbeddingClient } from "../src/embeddings/client.js";
 import type { DenseSearchResult } from "../src/retrieval/hybrid-search.js";
 
@@ -503,6 +507,15 @@ async function main() {
     skipped.push("semantic", "hybrid");
   }
 
+  // Experimental retriever settings, e.g. RETRIEVER_OPTS='{"hybridDropsStopwords":false}'.
+  const retrieverOptions = JSON.parse(process.env.RETRIEVER_OPTS || "{}") as Pick<
+    MemoryRetrieverDependencies,
+    "rrfK" | "lexicalWeight" | "denseWeight" | "hybridDropsStopwords"
+  >;
+  if (Object.keys(retrieverOptions).length > 0) {
+    embeddingNote += `; retriever options ${JSON.stringify(retrieverOptions)}`;
+  }
+
   const reports: StrategyReport[] = [];
   for (const strategy of strategies) {
     // Fresh database per strategy so access reinforcement cannot leak between runs,
@@ -513,6 +526,7 @@ async function main() {
     const retriever = new MemoryRetriever({
       db,
       now: () => now,
+      ...retrieverOptions,
       ...(queryEmbedder && denseIndex
         ? { embeddingClient: queryEmbedder, hybridSearch: denseIndex }
         : {}),
@@ -533,7 +547,7 @@ async function main() {
 
   const markdown = renderMarkdown(fixtures, reports, skipped, embeddingNote);
   mkdirSync(OUTPUT_DIR, { recursive: true });
-  const suffix = `${makeEmbedder ? "all" : "bm25"}${querySet === "main" ? "" : `-${querySet}`}`;
+  const suffix = `${embeddingsFile ? "cached" : makeEmbedder ? "all" : "bm25"}${querySet === "main" ? "" : `-${querySet}`}`;
   if (process.env.NO_WRITE_RESULTS !== "1") {
     writeFileSync(join(OUTPUT_DIR, `results-${suffix}.md`), markdown);
     writeFileSync(
