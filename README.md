@@ -4,7 +4,7 @@
 
 **Memory that learns, not just remembers.**
 
-Simple, local memory system for Claude Code. No authentication, no complexity - just memory that works.
+Simple, local memory system for MCP coding agents such as Claude Code and Codex. No authentication, no complexity - just memory that works.
 
 [![npm version](https://img.shields.io/npm/v/vesper-memory.svg)](https://www.npmjs.com/package/vesper-memory)
 [![npm downloads](https://img.shields.io/npm/dm/vesper-memory.svg)](https://www.npmjs.com/package/vesper-memory)
@@ -257,6 +257,27 @@ cp node_modules/vesper-memory/config/claude-rules/*.md ~/.claude/rules/
 # Windows (PowerShell)
 Copy-Item node_modules\vesper-memory\config\claude-rules\*.md $HOME\.claude\rules\
 ```
+
+### Using Vesper with Codex (or any MCP client)
+
+The Vesper server is a standard stdio MCP server, so it works with any MCP client. `vesper install` and `vesper init` only automate Claude Code setup; for Codex, add the server yourself.
+
+Find the server path (npm install) with `echo "$(npm root -g)/vesper-memory/dist/server.js"`, or use `~/.vesper/dist/server.js` for a manual install. Then add it to `~/.codex/config.toml` with the absolute path:
+
+```toml
+[mcp_servers.vesper]
+command = "node"
+args = ["/absolute/path/to/vesper-memory/dist/server.js"]
+env = { NODE_ENV = "production" }
+```
+
+To give Codex the same storage habits that `vesper init` gives Claude Code, append the rule files to your Codex instructions:
+
+```bash
+cat "$(npm root -g)/vesper-memory/config/claude-rules/"*.md >> ~/.codex/AGENTS.md
+```
+
+Claude Code and Codex can share one Vesper instance and the same `~/.vesper` data. Use the `namespace` parameter or `agent_id` if you want to keep their memories apart.
 
 ### Development Setup (For Vesper Contributors)
 
@@ -630,7 +651,7 @@ Per-namespace breakdown of memories, entities, skills, and agents.
 
 ## 🎯 Personalizing Memory Storage
 
-Vesper doesn't automatically store every detail - Claude Code decides when to use the `store_memory` tool based on conversation context and user instructions.
+Vesper doesn't automatically store every detail - your agent (Claude Code, Codex, etc.) decides when to use the `store_memory` tool based on conversation context and user instructions.
 
 ### Controlling When Memories Are Stored
 
