@@ -886,10 +886,10 @@ ${colors.bright}EXAMPLES:${colors.reset}
   vesper uninstall     # Remove Vesper
 
 ${colors.bright}DOCUMENTATION:${colors.reset}
-  https://github.com/fitz2882/vesper
+  https://github.com/fitz2882/vesper-memory
 
 ${colors.bright}SUPPORT:${colors.reset}
-  https://github.com/fitz2882/vesper/issues
+  https://github.com/fitz2882/vesper-memory/issues
 `);
     break;
 
