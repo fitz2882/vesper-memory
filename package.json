@@ -67,6 +67,7 @@
     "benchmark:unit": "vitest run tests/benchmark/statistics.test.ts tests/benchmark/types.test.ts tests/benchmark/metrics-collector.test.ts",
     "benchmark:real": "npx tsx scripts/run-real-benchmark.ts",
     "benchmark:accuracy": "npx tsx scripts/run-accuracy-benchmark.ts",
+    "benchmark:retrieval": "npx tsx scripts/run-retrieval-eval.ts",
     "lint": "eslint src tests",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "init:qdrant": "npx tsx scripts/init-qdrant.ts",

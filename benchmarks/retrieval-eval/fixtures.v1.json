@@ -1,0 +1,1435 @@
+{
+ "version": 1,
+ "reference_time": "2026-11-01T00:00:00Z",
+ "notes": "Frozen fixture. Do not edit labels after looking at results; add a new version instead.",
+ "memories": [
+  {
+   "id": "d-name",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The user's name is Priya Raman and she works from Lisbon, Portugal.",
+   "created_days_ago": 120
+  },
+  {
+   "id": "d-employer",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya works as a staff engineer at a logistics startup called Cargoline.",
+   "created_days_ago": 118
+  },
+  {
+   "id": "d-lang-pref",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya prefers TypeScript over Python for backend services because she wants compile-time type checking.",
+   "created_days_ago": 110
+  },
+  {
+   "id": "d-tabs",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Code style preference: two-space indentation, no semicolons, single quotes, enforced with Prettier.",
+   "created_days_ago": 100
+  },
+  {
+   "id": "d-dark",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya uses a light editor theme during the day and switches to Solarized Dark after sunset.",
+   "created_days_ago": 95
+  },
+  {
+   "id": "d-tests",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya expects every pull request to include unit tests and refuses to merge with coverage below 85 percent.",
+   "created_days_ago": 90
+  },
+  {
+   "id": "d-commit",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Commit messages should follow Conventional Commits, e.g. 'fix(api): handle empty cursor'.",
+   "created_days_ago": 88
+  },
+  {
+   "id": "d-tz",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Schedule meetings in Europe/Lisbon time; Priya does not take calls before 10:00 local.",
+   "created_days_ago": 87
+  },
+  {
+   "id": "d-err-econn",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "ECONNREFUSED 127.0.0.1:6380 on startup was caused by the dev Redis container not running; fix is docker compose up -d redis.",
+   "created_days_ago": 40
+  },
+  {
+   "id": "d-err-sqlite-busy",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "SQLITE_BUSY: database is locked appeared during consolidation; resolved by enabling WAL mode with PRAGMA journal_mode=WAL.",
+   "created_days_ago": 35
+  },
+  {
+   "id": "d-err-oom",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "The embedding container was OOM-killed (exit code 137) when batch size was 256; lowering it to 32 fixed it.",
+   "created_days_ago": 33
+  },
+  {
+   "id": "d-file-router",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Query classification logic lives in src/router/smart-router.ts in the classifyQuery function.",
+   "created_days_ago": 60
+  },
+  {
+   "id": "d-file-outbox",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The transactional outbox for Qdrant and Redis updates is implemented in src/retrieval/index-outbox.ts.",
+   "created_days_ago": 20
+  },
+  {
+   "id": "d-port-qdrant",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The development Qdrant instance listens on port 6334, not the default 6333.",
+   "created_days_ago": 70
+  },
+  {
+   "id": "d-port-embed",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The dev embedding service runs on port 8001; the personal instance uses 8000.",
+   "created_days_ago": 70
+  },
+  {
+   "id": "d-ticket",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "Ticket CARGO-4412 tracks the flaky geofence test that fails when the CI runner clock drifts.",
+   "created_days_ago": 25
+  },
+  {
+   "id": "d-feature-flag",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The feature flag route_v2_enabled gates the new routing engine and defaults to false in production.",
+   "created_days_ago": 22
+  },
+  {
+   "id": "d-api-limit",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The Mapbox Directions API key is limited to 300 requests per minute on the current plan.",
+   "created_days_ago": 45
+  },
+  {
+   "id": "d-deploy-friday",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Team rule: no production deploys on Friday afternoons after 14:00.",
+   "created_days_ago": 80
+  },
+  {
+   "id": "d-oncall",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya is on call the first week of every month; pager escalations go to Tomasz after 15 minutes.",
+   "created_days_ago": 50
+  },
+  {
+   "id": "d-hiring",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "Priya is interviewing two candidates for a backend role; she cares most about debugging skill over algorithm puzzles.",
+   "created_days_ago": 15
+  },
+  {
+   "id": "d-coffee",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya drinks oat flat whites and avoids caffeine after 3pm.",
+   "created_days_ago": 130
+  },
+  {
+   "id": "d-learning",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya is learning Rust on weekends using the Rustlings exercises.",
+   "created_days_ago": 55
+  },
+  {
+   "id": "d-postmortem",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "The 12 October outage was caused by an expired TLS certificate on the internal tracking API.",
+   "created_days_ago": 20
+  },
+  {
+   "id": "d-cache-ttl",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Shipment ETA responses are cached for 90 seconds to stay within the routing provider's quota.",
+   "created_days_ago": 42
+  },
+  {
+   "id": "d-db-choice-v1",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Decision: store shipment events in MongoDB for flexible schemas.",
+   "created_days_ago": 200,
+   "superseded_by": "d-db-choice-v2",
+   "valid_until_days_ago": 60
+  },
+  {
+   "id": "d-db-choice-v2",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Decision: migrate shipment events from MongoDB to PostgreSQL because we need transactional updates across tables.",
+   "created_days_ago": 60
+  },
+  {
+   "id": "d-queue-v1",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Decision: use RabbitMQ for the dispatch job queue.",
+   "created_days_ago": 150,
+   "superseded_by": "d-queue-v2",
+   "valid_until_days_ago": 30
+  },
+  {
+   "id": "d-queue-v2",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Decision: replace RabbitMQ with AWS SQS for dispatch jobs to reduce ops burden.",
+   "created_days_ago": 30
+  },
+  {
+   "id": "d-review-sla-v1",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Code reviews must be answered within 48 hours.",
+   "created_days_ago": 180,
+   "superseded_by": "d-review-sla-v2",
+   "valid_until_days_ago": 45
+  },
+  {
+   "id": "d-review-sla-v2",
+   "namespace": "default",
+   "memory_type": "decision",
+   "content": "Code reviews must be answered within one business day.",
+   "created_days_ago": 45
+  },
+  {
+   "id": "d-archived-laptop",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya's old laptop is a 2019 Intel MacBook Pro.",
+   "created_days_ago": 300,
+   "archived_days_ago": 100
+  },
+  {
+   "id": "d-laptop",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya's current laptop is a 14-inch M3 MacBook Pro with 36 GB of RAM.",
+   "created_days_ago": 100
+  },
+  {
+   "id": "d-expired-promo",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The staging environment is temporarily frozen until the Q3 audit finishes.",
+   "created_days_ago": 120,
+   "expired_days_ago": 60
+  },
+  {
+   "id": "d-skill-release",
+   "namespace": "default",
+   "memory_type": "procedural",
+   "content": "Release procedure: bump the version, run npm run build, tag vX.Y.Z, push the tag, then publish to npm with 2FA.",
+   "created_days_ago": 65
+  },
+  {
+   "id": "d-skill-db-migrate",
+   "namespace": "default",
+   "memory_type": "procedural",
+   "content": "To add a database column, write a migration in migrations/, run it against a staging snapshot, then deploy behind a flag.",
+   "created_days_ago": 58
+  },
+  {
+   "id": "d-skill-debug-flaky",
+   "namespace": "default",
+   "memory_type": "procedural",
+   "content": "When a test is flaky, first rerun it with a fixed random seed and frozen clock before changing any code.",
+   "created_days_ago": 48
+  },
+  {
+   "id": "d-pet",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya has a greyhound named Biscuit who needs a walk at lunchtime.",
+   "created_days_ago": 140
+  },
+  {
+   "id": "d-allergy",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya is allergic to peanuts; avoid suggesting Thai satay places for team lunches.",
+   "created_days_ago": 135
+  },
+  {
+   "id": "d-standup",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Daily standup is at 10:15 Lisbon time in the #routing-team channel.",
+   "created_days_ago": 75
+  },
+  {
+   "id": "d-linter",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "ESLint flat config is used; the rule no-floating-promises is set to error.",
+   "created_days_ago": 52
+  },
+  {
+   "id": "d-observability",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Traces are sent to Honeycomb; logs go to Loki with a 14-day retention.",
+   "created_days_ago": 44
+  },
+  {
+   "id": "d-k8s",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Production runs on EKS with three node groups; the routing workers have their own spot node group.",
+   "created_days_ago": 66
+  },
+  {
+   "id": "d-budget",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The monthly cloud budget is 18,000 USD and the routing workers are the largest line item.",
+   "created_days_ago": 38
+  },
+  {
+   "id": "d-manager",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya's manager is In\u00eas Carvalho, the VP of Engineering.",
+   "created_days_ago": 112
+  },
+  {
+   "id": "d-goal",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya's goal this quarter is to cut median ETA error from 9 minutes to under 5 minutes.",
+   "created_days_ago": 28
+  },
+  {
+   "id": "d-ml-model",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "ETA prediction uses a LightGBM model retrained nightly on the last 30 days of deliveries.",
+   "created_days_ago": 34
+  },
+  {
+   "id": "d-retrain-fail",
+   "namespace": "default",
+   "memory_type": "episodic",
+   "content": "Nightly retraining failed on 28 October because a feature column arrived as strings instead of floats.",
+   "created_days_ago": 4
+  },
+  {
+   "id": "d-docs-pref",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya prefers short design docs with a decision log at the top rather than long narratives.",
+   "created_days_ago": 92
+  },
+  {
+   "id": "d-meeting-free",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Wednesdays are meeting-free focus days for the routing team.",
+   "created_days_ago": 77
+  },
+  {
+   "id": "d-fill-00",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The geofence service computes polygon containment with the turf.js library.",
+   "created_days_ago": 10
+  },
+  {
+   "id": "d-fill-01",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Driver app releases go through TestFlight for internal QA before the App Store.",
+   "created_days_ago": 13
+  },
+  {
+   "id": "d-fill-02",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The warehouse scanner integration uses a SOAP endpoint that times out after 30 seconds.",
+   "created_days_ago": 16
+  },
+  {
+   "id": "d-fill-03",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Customer support uses Zendesk macros for delayed-shipment apologies.",
+   "created_days_ago": 19
+  },
+  {
+   "id": "d-fill-04",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The billing service is owned by the payments team in Warsaw.",
+   "created_days_ago": 22
+  },
+  {
+   "id": "d-fill-05",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Address normalization relies on libpostal running in a sidecar container.",
+   "created_days_ago": 25
+  },
+  {
+   "id": "d-fill-06",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Route optimization uses OR-Tools with a 20 second solver time limit.",
+   "created_days_ago": 28
+  },
+  {
+   "id": "d-fill-07",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The analytics warehouse is Snowflake and dbt models run hourly.",
+   "created_days_ago": 31
+  },
+  {
+   "id": "d-fill-08",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Grafana dashboards for dispatch latency live in the routing folder.",
+   "created_days_ago": 34
+  },
+  {
+   "id": "d-fill-09",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Redis is used for rate limiting the public tracking API.",
+   "created_days_ago": 37
+  },
+  {
+   "id": "d-fill-10",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The mobile team prefers Kotlin Multiplatform for shared business logic.",
+   "created_days_ago": 40
+  },
+  {
+   "id": "d-fill-11",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Infrastructure is defined with Terraform modules in the infra-live repository.",
+   "created_days_ago": 43
+  },
+  {
+   "id": "d-fill-12",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Secrets are stored in AWS Secrets Manager and rotated every 90 days.",
+   "created_days_ago": 46
+  },
+  {
+   "id": "d-fill-13",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The public tracking page is a Next.js app deployed on Vercel.",
+   "created_days_ago": 49
+  },
+  {
+   "id": "d-fill-14",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Webhook deliveries to customers are retried with exponential backoff up to 24 hours.",
+   "created_days_ago": 52
+  },
+  {
+   "id": "d-fill-15",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Load tests use k6 scripts stored under tools/load.",
+   "created_days_ago": 55
+  },
+  {
+   "id": "d-fill-16",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The data retention policy deletes raw GPS pings after 180 days.",
+   "created_days_ago": 58
+  },
+  {
+   "id": "d-fill-17",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "A Postgres read replica serves the reporting dashboards.",
+   "created_days_ago": 61
+  },
+  {
+   "id": "d-fill-18",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The design system is built with Radix primitives and Tailwind.",
+   "created_days_ago": 64
+  },
+  {
+   "id": "d-fill-19",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Feature work is planned in two-week sprints starting on Mondays.",
+   "created_days_ago": 67
+  },
+  {
+   "id": "d-fill-20",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The routing team has five engineers and one product manager.",
+   "created_days_ago": 70
+  },
+  {
+   "id": "d-fill-21",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Incident reviews are blameless and published in Confluence within a week.",
+   "created_days_ago": 73
+  },
+  {
+   "id": "d-fill-22",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The internal CLI is called cargoctl and is written in Go.",
+   "created_days_ago": 76
+  },
+  {
+   "id": "d-fill-23",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Vehicle telematics arrive over MQTT through AWS IoT Core.",
+   "created_days_ago": 79
+  },
+  {
+   "id": "d-fill-24",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The legacy PHP admin panel is scheduled to be retired next year.",
+   "created_days_ago": 82
+  },
+  {
+   "id": "d-fill-25",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Dependency updates are automated with Renovate on a weekly schedule.",
+   "created_days_ago": 85
+  },
+  {
+   "id": "d-fill-26",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Docker images are scanned with Trivy in CI before pushing to ECR.",
+   "created_days_ago": 88
+  },
+  {
+   "id": "d-fill-27",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The company holiday party is in December at a venue in Alfama.",
+   "created_days_ago": 91
+  },
+  {
+   "id": "d-fill-28",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya once gave a talk about vehicle routing heuristics at a Lisbon JS meetup.",
+   "created_days_ago": 94
+  },
+  {
+   "id": "d-fill-29",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Error budgets are defined per service with a 99.9 percent monthly SLO.",
+   "created_days_ago": 97
+  },
+  {
+   "id": "d-fill-30",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The tracking API is versioned in the URL path, currently /v3.",
+   "created_days_ago": 100
+  },
+  {
+   "id": "d-fill-31",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Translations are managed in Crowdin and synced nightly.",
+   "created_days_ago": 103
+  },
+  {
+   "id": "d-fill-32",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The ops team uses PagerDuty schedules exported to Google Calendar.",
+   "created_days_ago": 106
+  },
+  {
+   "id": "d-fill-33",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Map tiles are cached in CloudFront for 24 hours.",
+   "created_days_ago": 109
+  },
+  {
+   "id": "d-fill-34",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Synthetic monitoring checks the tracking page every minute from three regions.",
+   "created_days_ago": 112
+  },
+  {
+   "id": "d-fill-35",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Pricing experiments are run with a homegrown A/B framework named Toggle.",
+   "created_days_ago": 115
+  },
+  {
+   "id": "d-fill-36",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Driver shift data is imported from a CSV export every morning at 06:00.",
+   "created_days_ago": 118
+  },
+  {
+   "id": "d-fill-37",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The GraphQL gateway federates the shipments and fleet subgraphs.",
+   "created_days_ago": 121
+  },
+  {
+   "id": "d-fill-38",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Unit tests run with Vitest and integration tests with Testcontainers.",
+   "created_days_ago": 124
+  },
+  {
+   "id": "d-fill-39",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The team retro uses a start/stop/continue format.",
+   "created_days_ago": 127
+  },
+  {
+   "id": "d-fill-40",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Customer contracts specify a 99.5 percent uptime for the tracking API.",
+   "created_days_ago": 130
+  },
+  {
+   "id": "d-fill-41",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The fleet subgraph is written in Kotlin with Spring Boot.",
+   "created_days_ago": 133
+  },
+  {
+   "id": "d-fill-42",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Cold-chain shipments require temperature readings every five minutes.",
+   "created_days_ago": 136
+  },
+  {
+   "id": "d-fill-43",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Priya mentors two junior engineers through a biweekly 1:1.",
+   "created_days_ago": 139
+  },
+  {
+   "id": "d-fill-44",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The ETA model features include traffic speed, stop count and historical dwell time.",
+   "created_days_ago": 142
+  },
+  {
+   "id": "d-fill-45",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Staging data is refreshed from an anonymized production snapshot every Sunday.",
+   "created_days_ago": 145
+  },
+  {
+   "id": "d-fill-46",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Rate cards for carriers are stored as versioned JSON in S3.",
+   "created_days_ago": 148
+  },
+  {
+   "id": "d-fill-47",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The office in Lisbon is near Cais do Sodr\u00e9.",
+   "created_days_ago": 151
+  },
+  {
+   "id": "d-fill-48",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "Onboarding docs for new engineers live in the handbook repository.",
+   "created_days_ago": 154
+  },
+  {
+   "id": "d-fill-49",
+   "namespace": "default",
+   "memory_type": "semantic",
+   "content": "The routing workers are written in TypeScript running on Node 22.",
+   "created_days_ago": 157
+  },
+  {
+   "id": "r-name",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Research subject profile: the participant's name is Priya Natarajan, based in Chennai.",
+   "created_days_ago": 30,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-lang",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Survey result: most respondents prefer Python over TypeScript for data pipelines.",
+   "created_days_ago": 25,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-err-econn",
+   "namespace": "researcher",
+   "memory_type": "episodic",
+   "content": "ECONNREFUSED 127.0.0.1:6380 in the research sandbox was a firewall rule, not Redis.",
+   "created_days_ago": 12,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-db",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Literature review: PostgreSQL outperforms MongoDB for multi-document transactions in 2025 benchmarks.",
+   "created_days_ago": 18,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-queue",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Comparison notes: SQS has lower operational overhead than RabbitMQ but weaker ordering guarantees.",
+   "created_days_ago": 16,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-eta",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Paper summary: graph neural networks reduce ETA error by 12 percent over gradient boosting in urban delivery.",
+   "created_days_ago": 14,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-coverage",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Study: teams enforcing 85 percent coverage saw fewer regressions but slower merges.",
+   "created_days_ago": 20,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-flaky",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Research note: flaky tests are most often caused by time and ordering dependencies.",
+   "created_days_ago": 11,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-oncall",
+   "namespace": "researcher",
+   "memory_type": "semantic",
+   "content": "Survey: engineers on call one week per month report lower burnout than those on rolling rotations.",
+   "created_days_ago": 9,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "r-release",
+   "namespace": "researcher",
+   "memory_type": "procedural",
+   "content": "Industry practice: most npm packages publish from CI with provenance rather than from laptops.",
+   "created_days_ago": 8,
+   "agent_id": "research-bot"
+  },
+  {
+   "id": "v-tests",
+   "namespace": "reviewer",
+   "memory_type": "semantic",
+   "content": "Reviewer guideline: block pull requests that lower coverage below 80 percent.",
+   "created_days_ago": 21,
+   "agent_id": "review-bot"
+  },
+  {
+   "id": "v-commit",
+   "namespace": "reviewer",
+   "memory_type": "semantic",
+   "content": "Reviewer guideline: commit messages must reference a Jira ticket like CARGO-1234.",
+   "created_days_ago": 19,
+   "agent_id": "review-bot"
+  },
+  {
+   "id": "v-style",
+   "namespace": "reviewer",
+   "memory_type": "semantic",
+   "content": "Reviewer guideline: four-space indentation and semicolons are required in the legacy PHP admin.",
+   "created_days_ago": 17,
+   "agent_id": "review-bot"
+  },
+  {
+   "id": "v-deploy",
+   "namespace": "reviewer",
+   "memory_type": "decision",
+   "content": "Reviewer note: deploys on Friday are allowed if the change is behind a feature flag.",
+   "created_days_ago": 13,
+   "agent_id": "review-bot"
+  },
+  {
+   "id": "v-router",
+   "namespace": "reviewer",
+   "memory_type": "semantic",
+   "content": "Reviewer note: src/router/smart-router.ts classifyQuery has too many regexes; suggest a table.",
+   "created_days_ago": 6,
+   "agent_id": "review-bot"
+  }
+ ],
+ "queries": [
+  {
+   "id": "lx-01",
+   "family": "lexical",
+   "query": "ECONNREFUSED 127.0.0.1:6380",
+   "namespace": "default",
+   "relevant": [
+    "d-err-econn"
+   ]
+  },
+  {
+   "id": "lx-02",
+   "family": "lexical",
+   "query": "SQLITE_BUSY database is locked",
+   "namespace": "default",
+   "relevant": [
+    "d-err-sqlite-busy"
+   ]
+  },
+  {
+   "id": "lx-03",
+   "family": "lexical",
+   "query": "exit code 137",
+   "namespace": "default",
+   "relevant": [
+    "d-err-oom"
+   ]
+  },
+  {
+   "id": "lx-04",
+   "family": "lexical",
+   "query": "smart-router.ts classifyQuery",
+   "namespace": "default",
+   "relevant": [
+    "d-file-router"
+   ]
+  },
+  {
+   "id": "lx-05",
+   "family": "lexical",
+   "query": "index-outbox.ts",
+   "namespace": "default",
+   "relevant": [
+    "d-file-outbox"
+   ]
+  },
+  {
+   "id": "lx-06",
+   "family": "lexical",
+   "query": "CARGO-4412",
+   "namespace": "default",
+   "relevant": [
+    "d-ticket"
+   ]
+  },
+  {
+   "id": "lx-07",
+   "family": "lexical",
+   "query": "route_v2_enabled",
+   "namespace": "default",
+   "relevant": [
+    "d-feature-flag"
+   ]
+  },
+  {
+   "id": "lx-08",
+   "family": "lexical",
+   "query": "port 6334",
+   "namespace": "default",
+   "relevant": [
+    "d-port-qdrant"
+   ]
+  },
+  {
+   "id": "lx-09",
+   "family": "lexical",
+   "query": "Mapbox Directions API",
+   "namespace": "default",
+   "relevant": [
+    "d-api-limit"
+   ]
+  },
+  {
+   "id": "lx-10",
+   "family": "lexical",
+   "query": "LightGBM",
+   "namespace": "default",
+   "relevant": [
+    "d-ml-model"
+   ],
+   "partially_relevant": [
+    "d-fill-44"
+   ]
+  },
+  {
+   "id": "lx-11",
+   "family": "lexical",
+   "query": "Honeycomb Loki",
+   "namespace": "default",
+   "relevant": [
+    "d-observability"
+   ]
+  },
+  {
+   "id": "lx-12",
+   "family": "lexical",
+   "query": "Rustlings",
+   "namespace": "default",
+   "relevant": [
+    "d-learning"
+   ]
+  },
+  {
+   "id": "cv-01",
+   "family": "conversational",
+   "query": "What is my name?",
+   "namespace": "default",
+   "relevant": [
+    "d-name"
+   ]
+  },
+  {
+   "id": "cv-02",
+   "family": "conversational",
+   "query": "Where do I work?",
+   "namespace": "default",
+   "relevant": [
+    "d-employer"
+   ],
+   "partially_relevant": [
+    "d-name"
+   ]
+  },
+  {
+   "id": "cv-03",
+   "family": "conversational",
+   "query": "Who is my manager?",
+   "namespace": "default",
+   "relevant": [
+    "d-manager"
+   ]
+  },
+  {
+   "id": "cv-04",
+   "family": "conversational",
+   "query": "What is my dog called?",
+   "namespace": "default",
+   "relevant": [
+    "d-pet"
+   ]
+  },
+  {
+   "id": "cv-05",
+   "family": "conversational",
+   "query": "What am I allergic to?",
+   "namespace": "default",
+   "relevant": [
+    "d-allergy"
+   ]
+  },
+  {
+   "id": "cv-06",
+   "family": "conversational",
+   "query": "What laptop do I use?",
+   "namespace": "default",
+   "relevant": [
+    "d-laptop"
+   ]
+  },
+  {
+   "id": "cv-07",
+   "family": "conversational",
+   "query": "When is standup?",
+   "namespace": "default",
+   "relevant": [
+    "d-standup"
+   ]
+  },
+  {
+   "id": "cv-08",
+   "family": "conversational",
+   "query": "What is my goal this quarter?",
+   "namespace": "default",
+   "relevant": [
+    "d-goal"
+   ]
+  },
+  {
+   "id": "pp-01",
+   "family": "paraphrase",
+   "query": "Which language does she favour for server code?",
+   "namespace": "default",
+   "relevant": [
+    "d-lang-pref"
+   ]
+  },
+  {
+   "id": "pp-02",
+   "family": "paraphrase",
+   "query": "How should I format source files?",
+   "namespace": "default",
+   "relevant": [
+    "d-tabs"
+   ],
+   "partially_relevant": [
+    "d-linter"
+   ]
+  },
+  {
+   "id": "pp-03",
+   "family": "paraphrase",
+   "query": "What colour scheme for the editor at night?",
+   "namespace": "default",
+   "relevant": [
+    "d-dark"
+   ]
+  },
+  {
+   "id": "pp-04",
+   "family": "paraphrase",
+   "query": "Minimum test coverage needed before merging",
+   "namespace": "default",
+   "relevant": [
+    "d-tests"
+   ]
+  },
+  {
+   "id": "pp-05",
+   "family": "paraphrase",
+   "query": "What hot drink should I bring her?",
+   "namespace": "default",
+   "relevant": [
+    "d-coffee"
+   ]
+  },
+  {
+   "id": "pp-06",
+   "family": "paraphrase",
+   "query": "Earliest time I can book a call with her",
+   "namespace": "default",
+   "relevant": [
+    "d-tz"
+   ]
+  },
+  {
+   "id": "pp-07",
+   "family": "paraphrase",
+   "query": "Why did the vector database connection get refused locally?",
+   "namespace": "default",
+   "relevant": [
+    "d-err-econn"
+   ],
+   "partially_relevant": [
+    "d-port-qdrant"
+   ]
+  },
+  {
+   "id": "pp-08",
+   "family": "paraphrase",
+   "query": "The model container keeps getting killed for using too much memory",
+   "namespace": "default",
+   "relevant": [
+    "d-err-oom"
+   ]
+  },
+  {
+   "id": "pp-09",
+   "family": "paraphrase",
+   "query": "What broke the tracking service in mid October?",
+   "namespace": "default",
+   "relevant": [
+    "d-postmortem"
+   ]
+  },
+  {
+   "id": "pp-10",
+   "family": "paraphrase",
+   "query": "How long are arrival time predictions kept before recomputing?",
+   "namespace": "default",
+   "relevant": [
+    "d-cache-ttl"
+   ]
+  },
+  {
+   "id": "pp-11",
+   "family": "paraphrase",
+   "query": "How do I ship a new version of the package?",
+   "namespace": "default",
+   "relevant": [
+    "d-skill-release"
+   ]
+  },
+  {
+   "id": "pp-12",
+   "family": "paraphrase",
+   "query": "Steps for adding a field to a table",
+   "namespace": "default",
+   "relevant": [
+    "d-skill-db-migrate"
+   ]
+  },
+  {
+   "id": "pp-13",
+   "family": "paraphrase",
+   "query": "A test passes sometimes and fails other times, what do I do first?",
+   "namespace": "default",
+   "relevant": [
+    "d-skill-debug-flaky"
+   ],
+   "partially_relevant": [
+    "d-ticket"
+   ]
+  },
+  {
+   "id": "pp-14",
+   "family": "paraphrase",
+   "query": "How much can we spend on cloud each month?",
+   "namespace": "default",
+   "relevant": [
+    "d-budget"
+   ]
+  },
+  {
+   "id": "pp-15",
+   "family": "paraphrase",
+   "query": "Which day has no meetings?",
+   "namespace": "default",
+   "relevant": [
+    "d-meeting-free"
+   ]
+  },
+  {
+   "id": "pp-16",
+   "family": "paraphrase",
+   "query": "What went wrong with last night's model training?",
+   "namespace": "default",
+   "relevant": [
+    "d-retrain-fail"
+   ],
+   "partially_relevant": [
+    "d-ml-model"
+   ]
+  },
+  {
+   "id": "pp-17",
+   "family": "paraphrase",
+   "query": "What does she look for when hiring?",
+   "namespace": "default",
+   "relevant": [
+    "d-hiring"
+   ]
+  },
+  {
+   "id": "pp-18",
+   "family": "paraphrase",
+   "query": "Who handles pages if I don't respond?",
+   "namespace": "default",
+   "relevant": [
+    "d-oncall"
+   ]
+  },
+  {
+   "id": "hd-01",
+   "family": "distractor",
+   "query": "What is the user's name?",
+   "namespace": "default",
+   "relevant": [
+    "d-name"
+   ],
+   "forbidden": [
+    "r-name"
+   ]
+  },
+  {
+   "id": "hd-02",
+   "family": "distractor",
+   "query": "Does she prefer Python or TypeScript?",
+   "namespace": "default",
+   "relevant": [
+    "d-lang-pref"
+   ],
+   "forbidden": [
+    "r-lang"
+   ]
+  },
+  {
+   "id": "hd-03",
+   "family": "distractor",
+   "query": "Required coverage percentage for pull requests",
+   "namespace": "default",
+   "relevant": [
+    "d-tests"
+   ],
+   "forbidden": [
+    "v-tests",
+    "r-coverage"
+   ]
+  },
+  {
+   "id": "hd-04",
+   "family": "distractor",
+   "query": "Are Friday deploys allowed?",
+   "namespace": "default",
+   "relevant": [
+    "d-deploy-friday"
+   ],
+   "forbidden": [
+    "v-deploy"
+   ]
+  },
+  {
+   "id": "hd-05",
+   "family": "distractor",
+   "query": "What should commit messages look like?",
+   "namespace": "default",
+   "relevant": [
+    "d-commit"
+   ],
+   "forbidden": [
+    "v-commit"
+   ]
+  },
+  {
+   "id": "hd-06",
+   "family": "distractor",
+   "query": "Indentation and semicolon rules",
+   "namespace": "default",
+   "relevant": [
+    "d-tabs"
+   ],
+   "forbidden": [
+    "v-style"
+   ]
+  },
+  {
+   "id": "hd-07",
+   "family": "distractor",
+   "query": "Survey on flaky tests causes",
+   "namespace": "researcher",
+   "relevant": [
+    "r-flaky"
+   ],
+   "forbidden": [
+    "d-skill-debug-flaky",
+    "d-ticket"
+   ]
+  },
+  {
+   "id": "hd-08",
+   "family": "distractor",
+   "query": "Reviewer guideline on coverage",
+   "namespace": "reviewer",
+   "relevant": [
+    "v-tests"
+   ],
+   "forbidden": [
+    "d-tests",
+    "r-coverage"
+   ]
+  },
+  {
+   "id": "lg-01",
+   "family": "longitudinal",
+   "query": "Which database stores shipment events?",
+   "namespace": "default",
+   "relevant": [
+    "d-db-choice-v2"
+   ],
+   "stale": [
+    "d-db-choice-v1"
+   ]
+  },
+  {
+   "id": "lg-02",
+   "family": "longitudinal",
+   "query": "What queue do dispatch jobs use?",
+   "namespace": "default",
+   "relevant": [
+    "d-queue-v2"
+   ],
+   "stale": [
+    "d-queue-v1"
+   ]
+  },
+  {
+   "id": "lg-03",
+   "family": "longitudinal",
+   "query": "How fast must code reviews be answered?",
+   "namespace": "default",
+   "relevant": [
+    "d-review-sla-v2"
+   ],
+   "stale": [
+    "d-review-sla-v1"
+   ]
+  },
+  {
+   "id": "lg-04",
+   "family": "longitudinal",
+   "query": "Which database stores shipment events?",
+   "namespace": "default",
+   "relevant": [
+    "d-db-choice-v1"
+   ],
+   "stale": [
+    "d-db-choice-v2"
+   ],
+   "as_of_days_ago": 100
+  },
+  {
+   "id": "lg-05",
+   "family": "longitudinal",
+   "query": "What queue do dispatch jobs use?",
+   "namespace": "default",
+   "relevant": [
+    "d-queue-v1"
+   ],
+   "stale": [
+    "d-queue-v2"
+   ],
+   "as_of_days_ago": 60
+  },
+  {
+   "id": "lg-06",
+   "family": "longitudinal",
+   "query": "How fast must code reviews be answered?",
+   "namespace": "default",
+   "relevant": [
+    "d-review-sla-v1"
+   ],
+   "stale": [
+    "d-review-sla-v2"
+   ],
+   "as_of_days_ago": 90
+  },
+  {
+   "id": "lg-07",
+   "family": "longitudinal",
+   "query": "What laptop does Priya have?",
+   "namespace": "default",
+   "relevant": [
+    "d-laptop"
+   ],
+   "stale": [
+    "d-archived-laptop"
+   ]
+  },
+  {
+   "id": "lg-08",
+   "family": "longitudinal",
+   "query": "Is the staging environment frozen?",
+   "namespace": "default",
+   "relevant": [],
+   "stale": [
+    "d-expired-promo"
+   ]
+  },
+  {
+   "id": "ab-01",
+   "family": "abstention",
+   "query": "What is Priya's favourite football team?",
+   "namespace": "default",
+   "relevant": []
+  },
+  {
+   "id": "ab-02",
+   "family": "abstention",
+   "query": "Which cloud region hosts the Tokyo cluster?",
+   "namespace": "default",
+   "relevant": []
+  },
+  {
+   "id": "ab-03",
+   "family": "abstention",
+   "query": "What is the Wi-Fi password at the office?",
+   "namespace": "default",
+   "relevant": []
+  },
+  {
+   "id": "ab-04",
+   "family": "abstention",
+   "query": "Who won the hackathon last spring?",
+   "namespace": "default",
+   "relevant": []
+  },
+  {
+   "id": "ab-05",
+   "family": "abstention",
+   "query": "What is the user's name?",
+   "namespace": "empty-namespace",
+   "relevant": []
+  },
+  {
+   "id": "ab-06",
+   "family": "abstention",
+   "query": "Rust borrow checker lifetime error E0597",
+   "namespace": "default",
+   "relevant": []
+  }
+ ]
+}

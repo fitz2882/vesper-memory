@@ -1,0 +1,486 @@
+{
+  "fixtureVersion": 1,
+  "k": 5,
+  "embeddingNote": "BGE-large-en-v1.5 via http://localhost:8000",
+  "reports": [
+    {
+      "strategy": "full_text",
+      "overall": {
+        "queries": 53,
+        "recallAt1": 0.6792452830188679,
+        "recallAt3": 0.7735849056603774,
+        "recallAt5": 0.7735849056603774,
+        "mrr": 0.7201257861635221,
+        "ndcgAt5": 0.7362737268198127
+      },
+      "byFamily": {
+        "lexical": {
+          "queries": 12,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 0.9855195547607133
+        },
+        "conversational": {
+          "queries": 8,
+          "recallAt1": 0.625,
+          "recallAt3": 0.75,
+          "recallAt5": 0.75,
+          "mrr": 0.6666666666666667,
+          "ndcgAt5": 0.6875
+        },
+        "paraphrase": {
+          "queries": 18,
+          "recallAt1": 0.2777777777777778,
+          "recallAt3": 0.4444444444444444,
+          "recallAt5": 0.4444444444444444,
+          "mrr": 0.35185185185185186,
+          "ndcgAt5": 0.3925190617083365
+        },
+        "distractor": {
+          "queries": 8,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "longitudinal": {
+          "queries": 7,
+          "recallAt1": 0.8571428571428571,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.9285714285714286,
+          "ndcgAt5": 0.9472756790816368
+        },
+        "abstention": {
+          "queries": 0,
+          "recallAt1": 0,
+          "recallAt3": 0,
+          "recallAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 8,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 7,
+      "abstentionNonEmpty": 6,
+      "latencyP50Ms": 0.6387919999997393,
+      "latencyP95Ms": 1.045708999999988,
+      "misses": [
+        {
+          "id": "cv-02",
+          "query": "Where do I work?",
+          "expected": [
+            "d-employer"
+          ],
+          "got": [
+            "d-fill-47",
+            "d-fill-19"
+          ]
+        },
+        {
+          "id": "cv-04",
+          "query": "What is my dog called?",
+          "expected": [
+            "d-pet"
+          ],
+          "got": [
+            "d-fill-22",
+            "d-employer",
+            "d-linter",
+            "d-fill-47",
+            "d-fill-07"
+          ]
+        },
+        {
+          "id": "pp-02",
+          "query": "How should I format source files?",
+          "expected": [
+            "d-tabs"
+          ],
+          "got": [
+            "d-fill-39",
+            "d-commit"
+          ]
+        },
+        {
+          "id": "pp-04",
+          "query": "Minimum test coverage needed before merging",
+          "expected": [
+            "d-tests"
+          ],
+          "got": [
+            "d-skill-debug-flaky",
+            "d-ticket",
+            "d-fill-26",
+            "d-fill-01",
+            "d-tz"
+          ]
+        },
+        {
+          "id": "pp-05",
+          "query": "What hot drink should I bring her?",
+          "expected": [
+            "d-coffee"
+          ],
+          "got": [
+            "d-commit"
+          ]
+        },
+        {
+          "id": "pp-06",
+          "query": "Earliest time I can book a call with her",
+          "expected": [
+            "d-tz"
+          ],
+          "got": [
+            "d-fill-06",
+            "d-oncall",
+            "d-fill-35",
+            "d-fill-44",
+            "d-standup"
+          ]
+        },
+        {
+          "id": "pp-07",
+          "query": "Why did the vector database connection get refused locally?",
+          "expected": [
+            "d-err-econn"
+          ],
+          "got": [
+            "d-err-sqlite-busy",
+            "d-skill-db-migrate",
+            "d-fill-37",
+            "d-budget",
+            "d-fill-00"
+          ]
+        },
+        {
+          "id": "pp-10",
+          "query": "How long are arrival time predictions kept before recomputing?",
+          "expected": [
+            "d-cache-ttl"
+          ],
+          "got": [
+            "d-tz",
+            "d-fill-26",
+            "d-docs-pref",
+            "d-fill-01",
+            "d-fill-06"
+          ]
+        },
+        {
+          "id": "pp-11",
+          "query": "How do I ship a new version of the package?",
+          "expected": [
+            "d-skill-release"
+          ],
+          "got": [
+            "d-fill-47",
+            "d-fill-48",
+            "d-ml-model",
+            "d-laptop",
+            "d-retrain-fail"
+          ]
+        },
+        {
+          "id": "pp-15",
+          "query": "Which day has no meetings?",
+          "expected": [
+            "d-meeting-free"
+          ],
+          "got": [
+            "d-tz",
+            "d-review-sla-v2",
+            "d-deploy-friday",
+            "d-fill-20",
+            "d-tabs"
+          ]
+        },
+        {
+          "id": "pp-16",
+          "query": "What went wrong with last night's model training?",
+          "expected": [
+            "d-retrain-fail"
+          ],
+          "got": [
+            "d-ml-model",
+            "d-fill-44",
+            "d-laptop",
+            "d-manager",
+            "d-name"
+          ]
+        },
+        {
+          "id": "pp-18",
+          "query": "Who handles pages if I don't respond?",
+          "expected": [
+            "d-oncall"
+          ],
+          "got": [
+            "d-pet"
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "semantic",
+      "overall": {
+        "queries": 53,
+        "recallAt1": 0.8113207547169812,
+        "recallAt3": 0.9433962264150944,
+        "recallAt5": 0.9622641509433962,
+        "mrr": 0.8757861635220126,
+        "ndcgAt5": 0.8899291337888654
+      },
+      "byFamily": {
+        "lexical": {
+          "queries": 12,
+          "recallAt1": 0.9166666666666666,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 0.9583333333333334,
+          "ndcgAt5": 0.9547637008916681
+        },
+        "conversational": {
+          "queries": 8,
+          "recallAt1": 0.625,
+          "recallAt3": 0.75,
+          "recallAt5": 0.875,
+          "mrr": 0.71875,
+          "ndcgAt5": 0.7577007889556063
+        },
+        "paraphrase": {
+          "queries": 18,
+          "recallAt1": 0.6666666666666666,
+          "recallAt3": 0.9444444444444444,
+          "recallAt5": 0.9444444444444444,
+          "mrr": 0.787037037037037,
+          "ndcgAt5": 0.8137485204702778
+        },
+        "distractor": {
+          "queries": 8,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "longitudinal": {
+          "queries": 7,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "abstention": {
+          "queries": 0,
+          "recallAt1": 0,
+          "recallAt3": 0,
+          "recallAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 8,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 7,
+      "abstentionNonEmpty": 6,
+      "latencyP50Ms": 228.5174169999991,
+      "latencyP95Ms": 299.5856249999997,
+      "misses": [
+        {
+          "id": "cv-02",
+          "query": "Where do I work?",
+          "expected": [
+            "d-employer"
+          ],
+          "got": [
+            "d-fill-49",
+            "d-k8s",
+            "d-review-sla-v2",
+            "d-fill-05",
+            "d-fill-08"
+          ]
+        },
+        {
+          "id": "pp-18",
+          "query": "Who handles pages if I don't respond?",
+          "expected": [
+            "d-oncall"
+          ],
+          "got": [
+            "d-fill-03",
+            "d-commit",
+            "d-fill-14",
+            "d-fill-08",
+            "d-review-sla-v2"
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "hybrid",
+      "overall": {
+        "queries": 53,
+        "recallAt1": 0.7924528301886793,
+        "recallAt3": 0.8679245283018868,
+        "recallAt5": 0.8867924528301887,
+        "mrr": 0.8254716981132075,
+        "ndcgAt5": 0.8436618042623013
+      },
+      "byFamily": {
+        "lexical": {
+          "queries": 12,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 0.9855195547607133
+        },
+        "conversational": {
+          "queries": 8,
+          "recallAt1": 0.75,
+          "recallAt3": 0.75,
+          "recallAt5": 0.75,
+          "mrr": 0.75,
+          "ndcgAt5": 0.75
+        },
+        "paraphrase": {
+          "queries": 18,
+          "recallAt1": 0.5,
+          "recallAt3": 0.7222222222222222,
+          "recallAt5": 0.7777777777777778,
+          "mrr": 0.5972222222222222,
+          "ndcgAt5": 0.6604356093763006
+        },
+        "distractor": {
+          "queries": 8,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "longitudinal": {
+          "queries": 7,
+          "recallAt1": 1,
+          "recallAt3": 1,
+          "recallAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1
+        },
+        "abstention": {
+          "queries": 0,
+          "recallAt1": 0,
+          "recallAt3": 0,
+          "recallAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0
+        }
+      },
+      "staleHitRate": 0,
+      "staleQueries": 8,
+      "namespaceLeaks": 0,
+      "forbiddenHits": 0,
+      "abstentionQueries": 7,
+      "abstentionNonEmpty": 6,
+      "latencyP50Ms": 0.9394160000010743,
+      "latencyP95Ms": 1.3625000000029104,
+      "misses": [
+        {
+          "id": "cv-02",
+          "query": "Where do I work?",
+          "expected": [
+            "d-employer"
+          ],
+          "got": [
+            "d-fill-47",
+            "d-fill-19",
+            "d-fill-49",
+            "d-k8s",
+            "d-review-sla-v2"
+          ]
+        },
+        {
+          "id": "cv-04",
+          "query": "What is my dog called?",
+          "expected": [
+            "d-pet"
+          ],
+          "got": [
+            "d-fill-22",
+            "d-fill-09",
+            "d-fill-13",
+            "d-fill-30",
+            "d-learning"
+          ]
+        },
+        {
+          "id": "pp-07",
+          "query": "Why did the vector database connection get refused locally?",
+          "expected": [
+            "d-err-econn"
+          ],
+          "got": [
+            "d-err-sqlite-busy",
+            "d-skill-db-migrate",
+            "d-port-qdrant",
+            "d-fill-00",
+            "d-port-embed"
+          ]
+        },
+        {
+          "id": "pp-15",
+          "query": "Which day has no meetings?",
+          "expected": [
+            "d-meeting-free"
+          ],
+          "got": [
+            "d-deploy-friday",
+            "d-tz",
+            "d-review-sla-v2",
+            "d-linter",
+            "d-tabs"
+          ]
+        },
+        {
+          "id": "pp-16",
+          "query": "What went wrong with last night's model training?",
+          "expected": [
+            "d-retrain-fail"
+          ],
+          "got": [
+            "d-ml-model",
+            "d-skill-debug-flaky",
+            "d-fill-06",
+            "d-err-sqlite-busy",
+            "d-fill-38"
+          ]
+        },
+        {
+          "id": "pp-18",
+          "query": "Who handles pages if I don't respond?",
+          "expected": [
+            "d-oncall"
+          ],
+          "got": [
+            "d-fill-03",
+            "d-pet",
+            "d-commit",
+            "d-fill-14",
+            "d-fill-08"
+          ]
+        }
+      ]
+    }
+  ]
+}

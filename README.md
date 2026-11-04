@@ -55,9 +55,32 @@ Vesper does not yet have an end-task benchmark showing that memory improves Clau
 - **"F1" was keyword recall**, since precision and recall were computed with the same formula.
 - **The sub-millisecond latency** came from a Redis `GET` plus a `SELECT ... LIMIT 5`, with no embedding or search. Full queries that include BGE-large embedding averaged roughly 120 to 220 ms in the February 2026 run (`benchmarks/accuracy-results.md`). A memory lookup cannot be faster than doing no lookup; the only committed A/B latency run (`benchmarks/real-world-results.md`) shows the no-memory path faster, as expected.
 
-### What the current diagnostics show
+### Retrieval evaluation (v0.6.1)
 
-`npm run benchmark` runs component-level synthetic checks against the production `MemoryRetriever`:
+`npm run benchmark:retrieval` runs the production `MemoryRetriever` against a frozen, hand-labelled fixture: 115 memories across three namespaces and 60 queries, with labels written before any results were seen. See [`benchmarks/retrieval-eval/`](./benchmarks/retrieval-eval/) for the fixture and method.
+
+Results, top-5, BGE-large-en-v1.5 embeddings:
+
+| Query family | n | BM25 only | Dense only | Hybrid (RRF) |
+|---|---|---|---|---|
+| Exact identifiers and error strings | 12 | 100% | 100% | 100% |
+| Conversational ("What is my name?") | 8 | 75% | 88% | 75% |
+| Paraphrases (few shared words) | 18 | 44% | 94% | 78% |
+| Near-duplicates in other namespaces | 8 | 100% | 100% | 100% |
+| Superseded, archived, and `as_of` history | 7 | 100% | 100% | 100% |
+| **All answerable queries: Recall@5** | 53 | **77%** | **96%** | **89%** |
+| MRR | | 0.72 | 0.88 | 0.83 |
+
+- **Dense beats hybrid.** Fusing BM25 into the ranking lowers recall from 96% to 89%, because BM25 matches any shared word (including "what", "is", "my") and those noisy candidates outrank good dense hits. Hybrid is what `retrieve_memory` uses by default when embeddings are available, so this is the most important thing to fix next.
+- **Namespace leaks:** 0. **Stale hits** (a superseded, archived or expired version returned): 0 of 8 queries, for every strategy.
+- **No abstention:** 5 of the 6 queries with no relevant memory still returned results; the only exception is the empty namespace. Callers should treat low-scoring results as "nothing found".
+- **Latency:** dense queries took about 230 ms at P50 and 300 ms at P95, almost all of it BGE-large embedding on CPU in Docker on a MacBook Pro. That is over the 200 ms P95 target. BM25 alone takes about 1 ms.
+
+These are retrieval metrics on a small synthetic fixture. They show where each strategy fails; they do not show that memory improves an agent's answers.
+
+### Component diagnostics
+
+`npm run benchmark` runs component-level synthetic checks:
 
 | Check | What it actually tests | Result (v0.6.0) |
 |-------|------------------------|-----------------|
@@ -65,7 +88,7 @@ Vesper does not yet have an end-task benchmark showing that memory improves Clau
 | Read-after-write | Redis returns a value immediately after it is written | 100% |
 | Redis + SQLite round trip | One Redis `GET` and one indexed SQLite read, no embedding | P95 ≈ 0.1 ms |
 
-These are smoke tests that the plumbing works. They are not evidence of retrieval quality at realistic scale or of end-task improvement.
+These are smoke tests that the plumbing works.
 
 **Design targets** (not measured end to end): P95 retrieval latency under 200 ms including embedding.
 
