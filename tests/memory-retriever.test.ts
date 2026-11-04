@@ -105,6 +105,58 @@ describe("MemoryRetriever", () => {
     expect((await retriever.retrieve({ query: "reciprocal" })).results).toEqual([]);
   });
 
+  it("can drop stopwords from the FTS query, keeping them when nothing else is left", () => {
+    expect(sanitizeFtsQuery("What is my dog called?", { dropStopwords: true })).toBe(
+      '"dog" OR "called"'
+    );
+    expect(sanitizeFtsQuery("What is it?", { dropStopwords: true })).toBe('"What" OR "is" OR "it"');
+    expect(sanitizeFtsQuery("What is my dog called?")).toBe(
+      '"What" OR "is" OR "my" OR "dog" OR "called"'
+    );
+  });
+
+  it("drops stopwords from the lexical channel only when fusing with dense results", async () => {
+    insert({ id: "pet", content: "Biscuit the greyhound needs a lunchtime walk" });
+    insert({ id: "noise", content: "What is the rule for my Friday deploys" });
+    const dense = () => ({
+      embeddingClient: { embed: vi.fn().mockResolvedValue([1]) },
+      hybridSearch: {
+        denseSearch: vi.fn().mockResolvedValue([{ id: "pet", score: 0.9, payload: {} }]),
+      },
+    });
+
+    // Default: stopword-only overlap ("what", "is", "my") no longer nominates "noise".
+    const fused = await createRetriever(dense()).retrieve({
+      query: "What is my pet called",
+      strategy: "hybrid",
+    });
+    expect(fused.results.map((r) => r.id)).toEqual(["pet"]);
+
+    // Previous behaviour remains available.
+    const unfiltered = await createRetriever({
+      ...dense(),
+      hybridDropsStopwords: false,
+    }).retrieve({ query: "What is my pet called", strategy: "hybrid" });
+    expect(unfiltered.results.map((r) => r.id)).toContain("noise");
+
+    // BM25-only retrieval still uses every token.
+    const lexical = await createRetriever().retrieve({
+      query: "What is my pet called",
+      strategy: "full_text",
+    });
+    expect(lexical.results.map((r) => r.id)).toContain("noise");
+  });
+
+  it("reruns BM25 with every token when hybrid falls back because dense is unavailable", async () => {
+    insert({ id: "noise", content: "What is the rule for my Friday deploys" });
+    const response = await createRetriever({
+      embeddingClient: { embed: vi.fn().mockRejectedValue(new Error("embedding down")) },
+      hybridSearch: { denseSearch: vi.fn() },
+    }).retrieve({ query: "What is my pet called", strategy: "hybrid" });
+    expect(response.strategy).toBe("full_text");
+    expect(response.results.map((r) => r.id)).toEqual(["noise"]);
+  });
+
   it("turns user text into quoted literal tokens instead of raw FTS syntax", async () => {
     const retriever = createRetriever();
     insert({ id: "safe", content: "alpha release" });

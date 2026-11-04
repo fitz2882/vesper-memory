@@ -1,6 +1,6 @@
 {
   "name": "vesper-memory",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Local memory MCP server for coding agents like Claude Code and Codex - Three-layer architecture with semantic search, knowledge graphs, and intelligent retrieval",
   "type": "module",
   "engines": {

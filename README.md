@@ -59,19 +59,19 @@ Vesper does not yet have an end-task benchmark showing that memory improves Clau
 
 `npm run benchmark:retrieval` runs the production `MemoryRetriever` against a frozen, hand-labelled fixture: 115 memories across three namespaces and 60 queries, with labels written before any results were seen. See [`benchmarks/retrieval-eval/`](./benchmarks/retrieval-eval/) for the fixture and method.
 
-Results, top-5, BGE-large-en-v1.5 embeddings:
+Results, top-5, BGE-large-en-v1.5 embeddings (hybrid is what `retrieve_memory` uses when embeddings are available):
 
 | Query family | n | BM25 only | Dense only | Hybrid (RRF) |
 |---|---|---|---|---|
 | Exact identifiers and error strings | 12 | 100% | 100% | 100% |
-| Conversational ("What is my name?") | 8 | 75% | 88% | 75% |
-| Paraphrases (few shared words) | 18 | 44% | 94% | 78% |
+| Conversational ("What is my name?") | 8 | 75% | 88% | 88% |
+| Paraphrases (few shared words) | 18 | 44% | 94% | 89% |
 | Near-duplicates in other namespaces | 8 | 100% | 100% | 100% |
 | Superseded, archived, and `as_of` history | 7 | 100% | 100% | 100% |
-| **All answerable queries: Recall@5** | 53 | **77%** | **96%** | **89%** |
-| MRR | | 0.72 | 0.88 | 0.83 |
+| **All answerable queries: Recall@5** | 53 | **77%** | **96%** | **94%** |
+| **Held-out queries: Recall@5** | 28 | 79% | 96% | 93% |
 
-- **Dense beats hybrid.** Fusing BM25 into the ranking lowers recall from 96% to 89%, because BM25 matches any shared word (including "what", "is", "my") and those noisy candidates outrank good dense hits. Hybrid is what `retrieve_memory` uses by default when embeddings are available, so this is the most important thing to fix next.
+- **Hybrid was fixed in v0.6.2.** Before that, hybrid scored 89% (82% held-out): BM25 matched on words like "what", "is" and "my", and those noisy candidates pushed good dense hits out of the top five. The hybrid BM25 query now ignores common English stopwords. The change was chosen on the 53 tuning queries and confirmed on 28 held-out queries written beforehand. Every variant tried, including the ones that didn't help, is logged in [`EXPERIMENTS.md`](./benchmarks/retrieval-eval/EXPERIMENTS.md).
 - **Namespace leaks:** 0. **Stale hits** (a superseded, archived or expired version returned): 0 of 8 queries, for every strategy.
 - **No abstention:** 5 of the 6 queries with no relevant memory still returned results; the only exception is the empty namespace. Callers should treat low-scoring results as "nothing found".
 - **Latency:** dense queries took about 230 ms at P50 and 300 ms at P95, almost all of it BGE-large embedding on CPU in Docker on a MacBook Pro. That is over the 200 ms P95 target. BM25 alone takes about 1 ms.
