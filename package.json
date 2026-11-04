@@ -54,7 +54,6 @@
   "homepage": "https://github.com/fitz2882/vesper-memory#readme",
   "license": "MIT",
   "scripts": {
-    "postinstall": "node scripts/postinstall.js",
     "dev": "node --loader ts-node/esm src/server.ts",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "npm run clean && tsc",
