@@ -14,128 +14,64 @@ Simple, local memory system for Claude Code. No authentication, no complexity - 
 
 ---
 
-## ✨ What's New in v0.5.4
+## ✨ What's New in v0.6.0
 
-**`vesper init` Command**
-- New `vesper init` command to install Claude Code rules into any project
-- Automatically sets up `.claude/rules/` with Vesper memory guidelines
-
-**Delete Memory Tool** (v0.5.2)
-- `delete_memory` MCP tool to remove stored memories by ID
-- Cleans up across all layers (SQLite, Qdrant, Redis) and orphaned facts
-- 14 MCP tools total
-
-**Smart Router Activated**
-- SmartRouter now wired into `retrieve_memory` as primary retrieval path
-- All 6 query type handlers fully implemented (was dead code)
-- Factual queries use entity lookup + HippoRAG PageRank
-- Temporal queries parse time ranges ("yesterday", "last week")
-- Project queries use HippoRAG graph traversal (depth=2)
-- Complex queries fall back to semantic search with RRF fusion
-
-**1,007 tests passing** (up from 936 in v0.5.4)
+**Durable hybrid retrieval core**
+- SQLite is now the canonical store; Redis and Qdrant are rebuildable projections that only nominate candidate IDs
+- Canonical writes and derived-index updates commit in one SQLite transaction, with a retryable outbox and startup repair
+- Incremental, idempotent consolidation with per-memory checkpoints
+- Bitemporal memory rows: changes close the previous row and insert a successor instead of deleting history
+- See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) and [`CHANGELOG.md`](./CHANGELOG.md)
 
 <details>
-<summary>v0.5.0 Changes</summary>
+<summary>v0.5.x changes</summary>
 
-**Multi-Agent Namespace Isolation**
-- All memory operations support `namespace` parameter for multi-agent workflows
-- Multiple specialist agents can share Vesper while maintaining isolation
-- Fully backward compatible - existing single-agent usage unchanged
+**v0.5.4: `vesper init` command**
+- Installs Claude Code rules into `~/.claude/rules/` with Vesper memory guidelines
 
-**Agent Attribution**
-- Track which agent stored each memory with `agent_id`, `agent_role`, `task_id`
-- Filter retrieval by agent or task, or exclude specific agents
+**v0.5.2: `delete_memory` tool**
+- Removes a stored memory by ID across SQLite, Qdrant, and Redis, plus orphaned facts
 
-**Decision Memory Type**
-- New `memory_type: "decision"` with reduced temporal decay (4x slower)
-- Supersedes mechanism for evolving decisions
+**Smart Router activated**
+- SmartRouter wired into `retrieve_memory`, with handlers for factual, preference, project, temporal, skill, and complex queries
+
+**v0.5.0: Multi-agent namespace isolation**
+- All memory operations accept a `namespace` parameter (default `"default"`), fully backward compatible
+- Agent attribution with `agent_id`, `agent_role`, `task_id`, and retrieval filters for each
+- `memory_type: "decision"` with 4x slower temporal decay, a supersedes mechanism, and conflict detection against existing decisions
+- New tools: `share_context`, `store_decision`, `list_namespaces`, `namespace_stats`
 </details>
-- Automatic conflict detection against existing decisions
-
-**4 New MCP Tools** (13 total)
-- `share_context`: Copy memories between namespaces with handoff tracking
-- `store_decision`: Store decisions with conflict detection
-- `list_namespaces`: Discover all namespaces with counts
-- `namespace_stats`: Per-namespace breakdown of memories, entities, agents
-
-**1,007 tests passing** (up from 632 in v0.4.0)
 
 ---
 
-## 📊 Performance & Benchmarks
+## 📊 Benchmarks: What Is and Isn't Measured
 
-Vesper has been scientifically validated with comprehensive benchmarks measuring both **performance overhead** and **real-world value**.
+Vesper does not yet have an end-task benchmark showing that memory improves Claude's answers compared with a matched no-memory baseline. Earlier versions of this README showed an "accuracy" table (98.5% vs 2.0%, "+4,823%") and a latency table ("91% faster than without memory"). Those numbers were removed in v0.6.0 because they did not measure what they claimed:
 
-### Benchmark Types
+- **The "disabled" baseline was a hard-coded string**, `"No information available - memory is disabled."`, not a model or a retrieval run. Its 2.0% score came from the word "memory" in that string matching one expected keyword.
+- **"Enabled" scored retrieval of a sentence stored a moment earlier**, by checking whether the returned text contained keywords copied from that sentence. That tests read-after-write, not answer quality, reasoning, or long-term recall.
+- **"Contradiction detection" passed whenever two or more results were returned**, because a `|` separator counted as flagging a conflict. The conflict detector was never called.
+- **"Multi-hop reasoning" and "temporal context"** were the same keyword check; no graph traversal or time parsing was exercised.
+- **"F1" was keyword recall**, since precision and recall were computed with the same formula.
+- **The sub-millisecond latency** came from a Redis `GET` plus a `SELECT ... LIMIT 5`, with no embedding or search. Full queries that include BGE-large embedding averaged roughly 120 to 220 ms in the February 2026 run (`benchmarks/accuracy-results.md`). A memory lookup cannot be faster than doing no lookup; the only committed A/B latency run (`benchmarks/real-world-results.md`) shows the no-memory path faster, as expected.
 
-| Benchmark | Purpose | Key Metric | Result |
-|-----------|---------|------------|--------|
-| **Accuracy** | Measures VALUE (answer quality) | F1 Score | **98.5%** 🎯 |
-| **Latency** | Measures COST (overhead) | P95 Latency | **0.6ms** ⚡ |
+### What the current diagnostics show
 
-### Accuracy Benchmark Results ⭐
+`npm run benchmark` runs component-level synthetic checks against the production `MemoryRetriever`:
 
-**What it measures:** Does having memory improve answer quality?
+| Check | What it actually tests | Result (v0.6.0) |
+|-------|------------------------|-----------------|
+| Retrieval Recall@3 | 6 frozen queries against 6 seeded memories, SQLite FTS5 path | 100% |
+| Read-after-write | Redis returns a value immediately after it is written | 100% |
+| Redis + SQLite round trip | One Redis `GET` and one indexed SQLite read, no embedding | P95 ≈ 0.1 ms |
 
-**Methodology:** Store facts, then query. Measure if responses contain expected information.
+These are smoke tests that the plumbing works. They are not evidence of retrieval quality at realistic scale or of end-task improvement.
 
-| Category | Vesper Enabled | Vesper Disabled | Improvement |
-|----------|---------------|-----------------|-------------|
-| **Overall F1 Score** | **98.5%** | 2.0% | **+4,823%** 🚀 |
-| Factual Recall | 100% | 10% | +90% |
-| Preference Memory | 100% | 0% | +100% |
-| Temporal Context | 100% | 0% | +100% |
-| Multi-hop Reasoning | 92% | 0% | +92% |
-| Contradiction Detection | 100% | 0% | +100% |
+**Design targets** (not measured end to end): P95 retrieval latency under 200 ms including embedding.
 
-**Statistical Validation:**
-- ✅ p < 0.0001 (highly significant)
-- ✅ Cohen's d > 3.0 (large effect size)
-- ✅ 100% memory hit rate
+### What a real evaluation needs
 
-**Key Insight:** Vesper transforms generic responses into accurate, personalized answers - a **48× improvement** in answer quality.
-
-### Latency Benchmark Results
-
-**What it measures:** Performance overhead of memory operations.
-
-| Metric | Without Memory | With Vesper | Improvement |
-|--------|---------------|-------------|-------------|
-| **P50 Latency** | 4.6ms | 0.4ms | ✅ **91.3% faster** |
-| **P95 Latency** | 6.9ms | 0.6ms | ✅ **91.3% faster** |
-| **P99 Latency** | 8.2ms | 1.2ms | ✅ **85.4% faster** |
-| **Memory Hit Rate** | 0% | 100% | ✅ **Perfect recall** |
-
-**What this means:** Vesper v0.5.4 provides perfect memory recall with SmartRouter intelligently routing queries across 6 specialized handlers. Lazy loading reduces token usage by 90%, while the LRU embedding cache eliminates redundant embedding generation. Working memory provides sub-millisecond fast path for recent queries. All latency targets exceeded: P95 of 0.6ms is **99.7% better** than the 200ms target.
-
-### Benchmark Methodology
-
-Both benchmarks use rigorous scientific methods:
-
-- **Welch's t-test**: Tests statistical significance (p < 0.05)
-- **Cohen's d**: Measures effect size (practical significance)
-- **Warmup runs**: 3 runs to eliminate cold-start effects
-- **Measurement runs**: 10 runs for statistical power
-- **Controls**: Same test data for both enabled/disabled conditions
-
-See [`benchmarks/README.md`](./benchmarks/README.md) for detailed methodology and interpretation guide.
-
-### Running Benchmarks
-
-```bash
-# Measure VALUE (accuracy improvement)
-npm run benchmark:accuracy
-
-# Measure COST (latency overhead)
-npm run benchmark:real
-
-# Run unit tests
-npm run benchmark:scientific
-```
-
----
-
+[`docs/RETRIEVAL_EVALUATION.md`](./docs/RETRIEVAL_EVALUATION.md) defines the contract any future claim has to meet: frozen baselines (BM25 only, dense only, hybrid RRF, and a matched no-memory answer), hard distractors across namespaces and time, Recall@k / MRR / nDCG, stale-hit and namespace-leak rates, and end-task answer correctness. Contributions toward that harness are welcome.
 
 ---
 
@@ -266,8 +202,8 @@ vesper install
 vesper init
 
 # The installer will automatically:
-# 1. Clone/update Vesper to ~/.vesper
-# 2. Build TypeScript and install dependencies
+# 1. Copy the built package to ~/.vesper
+# 2. Install production dependencies
 # 3. Start Docker infrastructure (Redis, Qdrant, BGE embeddings)
 # 4. Configure Claude Code using: claude mcp add --scope user vesper
 ```
@@ -374,10 +310,12 @@ If you're developing Vesper itself, you need a different MCP configuration to us
 
 ### System Overview
 
+For the v0.6.0 storage and retrieval design (canonical SQLite, outbox, rebuildable indexes), see [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  MCP Server (Node.js/TypeScript)                        │
-│  - Four MCP tools                                       │
+│  - 14 MCP tools (namespace-aware)                       │
 │  - Smart query routing                                  │
 │  - Local stdio transport                                │
 └────────────────────┬────────────────────────────────────┘
@@ -442,7 +380,7 @@ Store a memory with automatic embedding generation.
 ```json
 {
   "content": "User prefers Python over JavaScript for backend development",
-  "memory_type": "preference",
+  "memory_type": "semantic",
   "namespace": "architect-agent",
   "metadata": {
     "confidence": 0.95,
@@ -481,12 +419,13 @@ Query with smart routing and semantic search.
 - `task_id` (optional): Filter to memories from a specific task
 - `exclude_agent` (optional): Exclude memories from a specific agent
 
-**Routing Strategies** (all active in v0.5.4):
-- `auto` (default): SmartRouter classifies query and routes optimally
-- `semantic`: BGE-large semantic search
-- `fast_path`: Working memory only (<5ms)
-- `full_text`: SQLite full-text search (fallback)
-- `graph`: HippoRAG graph traversal with PageRank
+**Routing Strategies** (optional `routing_strategy` parameter):
+- *(omitted)*: SmartRouter classifies the query and routes it
+- `semantic`: BGE-large dense search
+- `full_text`: SQLite FTS5 (BM25) search
+- `hybrid`: dense + full-text, fused with reciprocal rank fusion
+- `fast_path`: working memory only
+- `graph`: HippoRAG graph traversal with Personalized PageRank
 
 **Response**:
 ```json
@@ -771,7 +710,9 @@ vesper/
 │   ├── embeddings/
 │   │   └── client.ts                # BGE-large client
 │   ├── retrieval/
-│   │   └── hybrid-search.ts         # Qdrant + RRF fusion
+│   │   ├── memory-retriever.ts      # Canonical SQLite retrieval (FTS5 + dense + RRF)
+│   │   ├── index-outbox.ts          # Transactional outbox for derived indexes
+│   │   └── hybrid-search.ts         # Qdrant dense search
 │   ├── router/
 │   │   └── smart-router.ts          # Query classification
 │   ├── memory-layers/
@@ -808,7 +749,7 @@ vesper/
 
 ## 🧪 Test Coverage
 
-**Overall**: 1007/1007 tests passing (100%, 16 skipped integration cases)
+**Overall**: 1,007 passing and 16 skipped (1,023 total). The Qdrant suites need a running Qdrant; without it, 10 of them fail to connect.
 
 | Category | Tests | Status |
 |----------|-------|--------|
@@ -874,7 +815,8 @@ REDIS_PORT=6379
 QDRANT_URL=http://localhost:6333
 
 # SQLite (Knowledge Graph)
-SQLITE_DB=./data/memory.db
+# Default: ~/.vesper/data/memory.db (user-level storage)
+# SQLITE_DB=~/.vesper/data/memory.db
 
 # Embedding Service (BGE-large)
 EMBEDDING_SERVICE_URL=http://localhost:8000
@@ -970,18 +912,17 @@ curl http://localhost:6333/collections/memory-vectors
 
 ## 🎯 Design Philosophy
 
-**v0.5.4 Pragmatic Approach**:
+**Pragmatic Approach**:
 - ✅ Simple solutions over complex architectures
 - ✅ Honest uncertainty over auto-resolved conflicts
-- ✅ Fast local operation (<1ms P95 latency)
-- ✅ Comprehensive testing (1,007 tests)
+- ✅ Fast local operation (target: <200ms P95 retrieval)
+- ✅ Comprehensive testing (1,000+ tests)
 
 **What makes this special**:
-- Three-layer memory architecture with lazy loading
-- Intelligent retrieval (semantic search + graph traversal + relational embeddings)
-- 90% token efficiency gain (50 tokens vs 500 per skill)
-- Word2Vec-inspired analogical reasoning
-- Sub-millisecond P95 latency (0.6ms)
+- Three-layer memory architecture with lazy-loaded skills (summaries first, full description on demand)
+- Retrieval that combines full-text, dense, and graph signals
+- Durable storage: SQLite is canonical, search indexes can be rebuilt
+- Word2Vec-inspired relational skill embeddings
 - Simple local setup
 
 **What we're NOT building**:
@@ -1036,12 +977,12 @@ Vesper is built on foundational research in neuroscience, information retrieval,
 - [HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models](https://arxiv.org/abs/2405.14831) - NeurIPS 2024
 - Authors: Bernal Jiménez Gutiérrez, Yiheng Shu, Yu Su (OSU-NLP-Group)
 - Vesper's semantic memory layer uses HippoRAG's knowledge graph architecture with Personalized PageRank for multi-hop reasoning
-- Performance: 20% improvement in multi-hop question answering vs. traditional RAG
+- Reported result: up to 20% improvement on multi-hop question answering over prior retrieval methods
 - [GitHub Implementation](https://github.com/OSU-NLP-Group/HippoRAG)
 
 **Hippocampal Indexing Theory**
 - [The hippocampal indexing theory and episodic memory: updating the index](https://onlinelibrary.wiley.com/doi/10.1002/hipo.20350) - Hippocampus, 2007
-- Authors: Lynn Nadel, Arthur Moscovitch, Morris Moscovitch
+- Authors: Timothy J. Teyler, Jerry W. Rudy
 - Original theory: [The Hippocampal Memory Indexing Theory](https://pubmed.ncbi.nlm.nih.gov/3008780/) - Teyler & DiScenna, 1986
 - Inspired Vesper's three-layer memory architecture (working, semantic, procedural) and consolidation pipeline
 - Core concept: Hippocampus serves as an index to neocortical activity patterns for memory retrieval
@@ -1067,7 +1008,7 @@ Vesper is built on foundational research in neuroscience, information retrieval,
 - [Reciprocal rank fusion outperforms condorcet and individual rank learning methods](https://dl.acm.org/doi/10.1145/1571941.1572114) - SIGIR 2009
 - Authors: Gordon V. Cormack, Charles L. A. Clarke, Stefan Buettcher (University of Waterloo)
 - [Direct PDF](https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf)
-- Vesper uses RRF to combine dense embeddings, sparse vectors, and BM25 results
+- Vesper uses RRF to combine dense (Qdrant) and SQLite FTS5/BM25 results
 - Simple, effective fusion algorithm that consistently outperforms individual retrieval methods
 
 ### Skill Learning & Procedural Memory
@@ -1087,7 +1028,7 @@ Vesper is built on foundational research in neuroscience, information retrieval,
 - Vesper's architecture maps to human memory systems: working memory (prefrontal cortex), semantic memory (neocortex), procedural memory (cerebellum)
 
 **Temporal Decay and Memory Consolidation**
-- Exponential decay with 30-day half-life: `strength *= e^(-days/30)`
+- Exponential decay with a 30-day time constant (half-life ≈ 21 days): `strength *= e^(-days/30)`
 - Inspired by neuroscience research on memory consolidation and forgetting curves
 - Memories are reinforced on access, mimicking human memory strengthening
 
@@ -1096,7 +1037,7 @@ Vesper is built on foundational research in neuroscience, information retrieval,
 **Qdrant Vector Database**
 - [Qdrant](https://qdrant.tech/) - High-performance vector similarity search engine
 - Used for storing and retrieving 1024-dimensional BGE embeddings
-- Supports hybrid search with dense and sparse vectors
+- Dense vector search over BGE embeddings
 
 **SQLite FTS5**
 - [SQLite Full-Text Search](https://www.sqlite.org/fts5.html)

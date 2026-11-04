@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-11-04
+
+### Changed
+- README: removed the accuracy and latency benchmark tables, which compared against a hard-coded no-memory string and timed a Redis GET rather than a memory query. Replaced with a description of what the diagnostics actually test. See `docs/RETRIEVAL_EVALUATION.md`.
+- README: updated What's New to v0.6.0; fixed the `store_memory` example, routing strategies, installer description, and citations
+
 ## [0.6.0] - 2026-11-03
 
 ### Added

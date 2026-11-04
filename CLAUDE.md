@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - HippoRAG knowledge graph with multi-hop reasoning
 - Simple local setup (3 Docker services)
 
-**Performance**: <200ms P95 latency, 95%+ retrieval accuracy
+**Performance target**: <200ms P95 retrieval latency (not yet measured end to end; see README benchmarks section)
 
 **Test Coverage**: 1007/1007 tests passing (100%)
 
@@ -321,13 +321,15 @@ LOG_LEVEL=info
 
 ## Performance Targets
 
-### Current Performance (Validated)
+### Targets
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| P50 Latency | 0.4ms | <30ms | ✅ PASS |
-| P95 Latency | 0.6ms | <200ms | ✅ PASS |
-| P99 Latency | 1.2ms | <500ms | ✅ PASS |
+| Metric | Target |
+|--------|--------|
+| P50 retrieval latency (incl. embedding) | <30ms |
+| P95 retrieval latency (incl. embedding) | <200ms |
+| P99 retrieval latency (incl. embedding) | <500ms |
+
+The sub-millisecond figures in older docs came from a Redis GET plus a SQLite read with no embedding or search; do not cite them as query latency. Any accuracy or usefulness claim must follow `docs/RETRIEVAL_EVALUATION.md`.
 
 ---
 

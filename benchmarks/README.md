@@ -1,5 +1,7 @@
 # Vesper Benchmarks
 
+> **Status (v0.6.0):** the accuracy and A/B latency scripts described below predate the v0.6.0 retrieval core and do not support claims of end-task improvement. The accuracy script's "disabled" baseline is a fixed string and its contradiction check passes on any multi-result response. See the [main README](../README.md#-benchmarks-what-is-and-isnt-measured) and [`docs/RETRIEVAL_EVALUATION.md`](../docs/RETRIEVAL_EVALUATION.md). Result files in this folder are kept as historical records.
+
 This directory contains benchmark results and documentation for the Vesper memory system.
 
 ## Overview
