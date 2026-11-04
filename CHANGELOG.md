@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - better-sqlite3 upgraded to ^12 (#1)
 - MCP server logs to stderr only on the stdio path (#2)
 - `vesper install` passes MCP registration values as literal arguments (#7)
+- Added a `vesper-memory` bin alias so `npx vesper-memory install` resolves the CLI (npx needs a bin matching the package name when there is more than one)
 - Dense search uses the Qdrant `query` API so the build works with @qdrant/js-client-rest >= 1.17
 
 ### Security

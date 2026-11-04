@@ -9,6 +9,7 @@
   "main": "dist/server.js",
   "bin": {
     "vesper": "dist/cli.js",
+    "vesper-memory": "dist/cli.js",
     "vesper-server": "dist/server-wrapper.js"
   },
   "files": [
