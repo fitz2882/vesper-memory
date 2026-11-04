@@ -433,12 +433,19 @@ async function main() {
 
   const reports: StrategyReport[] = [];
   for (const strategy of strategies) {
-    // Fresh database per strategy so access reinforcement cannot leak between runs.
+    // Fresh database per strategy so access reinforcement cannot leak between runs,
+    // and a fresh embedding client so its query-embedding cache cannot make a later
+    // strategy look faster than an earlier one.
     const db = buildDatabase(fixtures, now);
+    const queryClient = embeddingClient
+      ? new EmbeddingClient({ serviceUrl, timeout: 30_000, maxRetries: 1 })
+      : undefined;
     const retriever = new MemoryRetriever({
       db,
       now: () => now,
-      ...(embeddingClient && denseIndex ? { embeddingClient, hybridSearch: denseIndex } : {}),
+      ...(queryClient && denseIndex
+        ? { embeddingClient: queryClient, hybridSearch: denseIndex }
+        : {}),
     });
     retriever.initialize();
     const outcomes = await runStrategy(retriever, fixtures, strategy, now);

@@ -33,3 +33,7 @@ Metrics: Recall@1/3/5, MRR and nDCG@5 (relevant = gain 2, partially relevant = g
 
 - Labels were written before any results were seen. Do not edit `fixtures.v1.json` after looking at results. Add `fixtures.v2.json` (via a new generator) instead, and keep v1 results for comparison.
 - The fixture is small and synthetic. It catches regressions and shows relative strengths of strategies; it does not measure end-task usefulness, which needs a matched no-memory answer study.
+
+## Known issue in the first dense run
+
+`results/results-all.*` (commit 065373f) reports hybrid latency of about 1 ms. That number is wrong: the semantic run and the hybrid run shared one `EmbeddingClient`, whose in-memory cache returned the query embeddings the semantic run had already computed. Rankings are unaffected (the vectors are identical), but hybrid's real latency is the same as semantic's, since both embed the query. The harness now uses a fresh client per strategy.
