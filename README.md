@@ -262,7 +262,7 @@ claude mcp add vesper --transport stdio --scope user -- node ~/.vesper/dist/serv
 
 ### Claude Code Rules (Recommended)
 
-`vesper init` installs rule files to `~/.claude/rules/` that teach Claude how and when to use Vesper memory. This works on all platforms:
+`vesper init` installs rule files to `~/.claude/rules/` that teach Claude how and when to use Vesper memory (`vesper init --client codex` puts the same rules in `~/.codex/AGENTS.md`). This works on all platforms:
 
 ```bash
 vesper init
@@ -283,21 +283,27 @@ Copy-Item node_modules\vesper-memory\config\claude-rules\*.md $HOME\.claude\rule
 
 ### Using Vesper with Codex (or any MCP client)
 
-The Vesper server is a standard stdio MCP server, so it works with any MCP client. `vesper install` and `vesper init` only automate Claude Code setup; for Codex, add the server yourself.
+The Vesper server is a standard stdio MCP server, so it works with any MCP client. `vesper install`, `vesper configure` and `vesper init` set up Claude Code by default; pass `--client codex` for Codex, or `--client all` for both:
 
-Find the server path (npm install) with `echo "$(npm root -g)/vesper-memory/dist/server.js"`, or use `~/.vesper/dist/server.js` for a manual install. Then add it to `~/.codex/config.toml` with the absolute path:
+```bash
+vesper install --client codex     # Docker services + Codex MCP registration
+vesper init --client codex        # memory usage rules for Codex
+```
+
+For Codex, Vesper edits only what it owns, and re-running is safe:
+
+- `~/.codex/config.toml`: adds or replaces the `[mcp_servers.vesper]` table. The file is parsed before and after the edit, and Vesper refuses to write if anything outside that table would change, if the file is not valid TOML, or if you defined `vesper` as an inline table. The previous file is kept as `config.toml.vesper-backup`.
+- `~/.codex/AGENTS.md`: the rule files go between `<!-- vesper:begin -->` and `<!-- vesper:end -->` markers. Re-running `vesper init --client codex` replaces only that block. If you previously appended the rules by hand, `init` warns you before adding a second copy.
+
+`CODEX_HOME` is respected. `vesper uninstall` removes the Codex table and rule block along with everything else.
+
+To set up Codex by hand instead, add this to `~/.codex/config.toml` with the absolute server path (`echo "$(npm root -g)/vesper-memory/dist/server.js"` for an npm install, or `~/.vesper/dist/server.js`):
 
 ```toml
 [mcp_servers.vesper]
 command = "node"
 args = ["/absolute/path/to/vesper-memory/dist/server.js"]
 env = { NODE_ENV = "production" }
-```
-
-To give Codex the same storage habits that `vesper init` gives Claude Code, append the rule files to your Codex instructions:
-
-```bash
-cat "$(npm root -g)/vesper-memory/config/claude-rules/"*.md >> ~/.codex/AGENTS.md
 ```
 
 Claude Code and Codex can share one Vesper instance and the same `~/.vesper` data. Use the `namespace` parameter or `agent_id` if you want to keep their memories apart.

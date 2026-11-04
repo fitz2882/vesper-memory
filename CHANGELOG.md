@@ -12,7 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MemoryRetriever` accepts `lexicalWeight` and `denseWeight` for weighted RRF (default 1, unchanged behaviour).
 
 ### Added
-- Retrieval benchmark: held-out query set, cached BGE-large embeddings (`EMBEDDINGS_FILE`) so dense and hybrid runs need no embedding service, and `benchmarks/retrieval-eval/EXPERIMENTS.md`.
+- `--client claude|codex|all` for `vesper install`, `vesper configure` and `vesper init`. Claude Code stays the default. For Codex, Vesper writes the `[mcp_servers.vesper]` table in `$CODEX_HOME/config.toml` (default `~/.codex`) and a marked rules block in `$CODEX_HOME/AGENTS.md`. Both edits are idempotent, keep a `.vesper-backup` copy, and are refused rather than guessed when the file is not valid TOML, defines `vesper` inline, or would change outside Vesper's table. `vesper uninstall` removes both, and `vesper status` reports the Codex registration.
+- Retrieval benchmark: held-out query set, identifier stress set, cached BGE-large embeddings (`EMBEDDINGS_FILE`) so dense and hybrid runs need no embedding service, and `benchmarks/retrieval-eval/EXPERIMENTS.md`.
+
+### Fixed
+- `vesper configure` no longer generates Redis, Qdrant and Postgres passwords when it creates `.env`. `.env.example` has no password lines, so the generated values were registered with the MCP client but never saved: each new `.env` registered new random secrets, the next run dropped them, and the bundled Docker services, which run without authentication, never used them. `.env` is now an exact copy of `.env.example`, and credentials reach the client only when you set them in `.env` yourself.
 
 ## [0.6.1] - 2026-11-04
 
