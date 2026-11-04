@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - README: removed the accuracy and latency benchmark tables, which compared against a hard-coded no-memory string and timed a Redis GET rather than a memory query. Replaced with a description of what the diagnostics actually test. See `docs/RETRIEVAL_EVALUATION.md`.
 - README: updated What's New to v0.6.0; fixed the `store_memory` example, routing strategies, installer description, and citations
+- README and npm description: Vesper is documented as working with any MCP client, with a Codex setup section (`~/.codex/config.toml`, `AGENTS.md` rules)
+- CLI help, server-wrapper error and QUICKSTART now link to `fitz2882/vesper-memory` instead of the nonexistent `fitz2882/vesper` (#2)
 
 ## [0.6.0] - 2026-11-03
 
