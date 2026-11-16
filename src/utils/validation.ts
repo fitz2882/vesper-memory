@@ -131,6 +131,16 @@ export const RetrieveMemoryInputSchema = z.object({
   include_archived: z.boolean().optional().default(false),
   as_of: TimestampInputSchema.optional(),
   explain: z.boolean().optional().default(false),
+
+  format: z.enum(["results", "brief"]).optional().default("results"),
+
+  brief_token_budget: z
+    .number()
+    .int("brief_token_budget must be an integer")
+    .min(100, "brief_token_budget must be at least 100")
+    .max(8000, "brief_token_budget cannot exceed 8000")
+    .optional()
+    .default(600),
 });
 
 export type RetrieveMemoryInput = z.infer<typeof RetrieveMemoryInputSchema>;

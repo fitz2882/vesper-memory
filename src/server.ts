@@ -40,6 +40,7 @@ import { getSqlitePath, ensureDirectories } from "./utils/paths.js";
 import { createEmbeddingClient, EmbeddingClient } from "./embeddings/client.js";
 import { HybridSearchEngine } from "./retrieval/hybrid-search.js";
 import { MemoryRetriever } from "./retrieval/memory-retriever.js";
+import { buildMemoryBrief, briefCandidateLimit } from "./retrieval/memory-brief.js";
 import { IndexOutboxProcessor, initializeIndexOutboxSchema } from "./retrieval/index-outbox.js";
 import { WorkingMemoryLayer } from "./memory-layers/working-memory.js";
 import { SemanticMemoryLayer } from "./memory-layers/semantic-memory.js";
@@ -184,6 +185,16 @@ const TOOLS = [
         explain: {
           type: "boolean",
           description: "Include content-free retrieval stage status and candidate counts",
+        },
+        format: {
+          type: "string",
+          enum: ["results", "brief"],
+          description:
+            "results (default): whole memories as structured results. brief: retrieve widely, then pack the most relevant parts of many memories into one compact text within brief_token_budget, with numbered sources. Use brief for questions that need several scattered facts.",
+        },
+        brief_token_budget: {
+          type: "number",
+          description: "Approximate token budget for format=brief (default 600, 100 to 8000)",
         },
       },
       required: ["query"],
@@ -1203,7 +1214,11 @@ async function handleRetrieveMemory(input: unknown): Promise<Record<string, unkn
   try {
     const validatedInput = validateInput(RetrieveMemoryInputSchema, input);
     const namespace = validatedInput.namespace || "default";
-    const maxResults = validatedInput.max_results || 5;
+    const isBrief = validatedInput.format === "brief";
+    const briefBudget = validatedInput.brief_token_budget ?? 600;
+    const maxResults = isBrief
+      ? briefCandidateLimit(validatedInput.max_results || 5, briefBudget)
+      : validatedInput.max_results || 5;
     const commonFilters = {
       namespace,
       memoryTypes: validatedInput.memory_types,
@@ -1222,7 +1237,7 @@ async function handleRetrieveMemory(input: unknown): Promise<Record<string, unkn
 
     // Redis can nominate recent candidates, but SQLite still authorizes and
     // hydrates every returned field. A cache miss falls through to FTS.
-    if (validatedInput.routing_strategy === "fast_path" && connections.workingMemory) {
+    if (!isBrief && validatedInput.routing_strategy === "fast_path" && connections.workingMemory) {
       try {
         const cached = await connections.workingMemory.search(
           validatedInput.query,
@@ -1302,6 +1317,20 @@ async function handleRetrieveMemory(input: unknown): Promise<Record<string, unkn
       `[INFO] Canonical retrieval: query="${validatedInput.query}", ns=${namespace}, ` +
         `strategy=${response.strategy}, results=${response.results.length}`
     );
+    if (isBrief) {
+      const brief = buildMemoryBrief(validatedInput.query, response.results, {
+        tokenBudget: briefBudget,
+      });
+      return {
+        success: true,
+        query: validatedInput.query,
+        namespace,
+        routing_strategy: response.strategy,
+        format: "brief",
+        ...brief,
+        ...(trace ? { trace } : {}),
+      };
+    }
     return formatRetrievalResponse(
       validatedInput.query,
       namespace,

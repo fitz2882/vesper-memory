@@ -55,6 +55,10 @@ Vesper does not yet have an end-task benchmark showing that memory improves Clau
 - **"F1" was keyword recall**, since precision and recall were computed with the same formula.
 - **The sub-millisecond latency** came from a Redis `GET` plus a `SELECT ... LIMIT 5`, with no embedding or search. Full queries that include BGE-large embedding averaged roughly 120 to 220 ms in the February 2026 run (`benchmarks/accuracy-results.md`). A memory lookup cannot be faster than doing no lookup; the only committed A/B latency run (`benchmarks/real-world-results.md`) shows the no-memory path faster, as expected.
 
+### Brief mode (unreleased)
+
+`retrieve_memory` with `format: "brief"` packs the most relevant parts of many memories into one numbered text within `brief_token_budget` tokens (default 600), instead of five whole memories. On LoCoMo-10 with BM25 it raised evidence recall from 34.7% to 45.3% at 600 tokens, and multi-hop evidence recall from 13.6% to 24.5%. That gain comes from spending a token budget rather than a fixed count; see [`benchmarks/brief-eval/`](./benchmarks/brief-eval/) for the method and limits.
+
 ### Retrieval evaluation (v0.6.1)
 
 `npm run benchmark:retrieval` runs the production `MemoryRetriever` against a frozen, hand-labelled fixture: 115 memories across three namespaces and 60 queries, with labels written before any results were seen. See [`benchmarks/retrieval-eval/`](./benchmarks/retrieval-eval/) for the fixture and method.

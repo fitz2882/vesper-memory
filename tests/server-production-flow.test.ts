@@ -30,6 +30,45 @@ describe.sequential("production server memory flow", () => {
     fs.rmSync(tempDirectory, { recursive: true, force: true });
   });
 
+  it("returns a budgeted brief with numbered sources when format is brief", async () => {
+    const ids: string[] = [];
+    for (const content of [
+      "Brief flow: the staging database is Postgres 16 on port 5433.",
+      "Brief flow: staging deploys run from the release branch every Friday.",
+      "Brief flow: the staging bucket is called vesper-staging-assets.",
+    ]) {
+      const stored = await server.processTool("store_memory", {
+        content,
+        memory_type: "semantic",
+        namespace: "brief-flow",
+      });
+      ids.push(stored.memory_id as string);
+    }
+    const response = await server.processTool("retrieve_memory", {
+      query: "staging",
+      namespace: "brief-flow",
+      routing_strategy: "full_text",
+      format: "brief",
+      brief_token_budget: 200,
+    });
+    expect(response.format).toBe("brief");
+    expect(response.results).toBeUndefined();
+    expect(response.token_estimate as number).toBeLessThanOrEqual(200);
+    const sources = response.sources as Array<{ ref: number; id: string }>;
+    expect(sources.map((s) => s.id).sort()).toEqual([...ids].sort());
+    expect(response.brief as string).toMatch(/^\[1\] /);
+    expect(response.brief as string).toContain("Postgres 16");
+
+    await expect(
+      server.processTool("retrieve_memory", {
+        query: "staging",
+        namespace: "brief-flow",
+        format: "brief",
+        brief_token_budget: 10,
+      })
+    ).rejects.toThrow();
+  });
+
   it("writes canonically, retrieves through FTS, and reports no phantom projection backlog", async () => {
     const stored = await server.processTool("store_memory", {
       content: "canonical outbox retrieval marker",

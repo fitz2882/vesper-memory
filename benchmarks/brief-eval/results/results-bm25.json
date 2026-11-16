@@ -1,0 +1,333 @@
+{
+  "full_text": {
+    "top5": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 189,
+        "allEvidence": 164,
+        "answerEligible": 319,
+        "answerPresent": 21,
+        "tokens": 63713
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 819,
+        "allEvidence": 639,
+        "answerEligible": 1278,
+        "answerPresent": 365,
+        "tokens": 304917
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 27,
+        "allEvidence": 13,
+        "answerEligible": 63,
+        "answerPresent": 1,
+        "tokens": 17301
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 120,
+        "allEvidence": 11,
+        "answerEligible": 201,
+        "answerPresent": 19,
+        "tokens": 54508
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 483,
+        "allEvidence": 451,
+        "answerEligible": 695,
+        "answerPresent": 324,
+        "tokens": 169395
+      }
+    },
+    "whole@300": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 207,
+        "allEvidence": 178,
+        "answerEligible": 319,
+        "answerPresent": 24,
+        "tokens": 91523
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 909,
+        "allEvidence": 695,
+        "answerEligible": 1278,
+        "answerPresent": 405,
+        "tokens": 439097
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 31,
+        "allEvidence": 16,
+        "answerEligible": 63,
+        "answerPresent": 3,
+        "tokens": 26335
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 149,
+        "allEvidence": 15,
+        "answerEligible": 201,
+        "answerPresent": 24,
+        "tokens": 80645
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 522,
+        "allEvidence": 486,
+        "answerEligible": 695,
+        "answerPresent": 354,
+        "tokens": 240594
+      }
+    },
+    "brief@300": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 207,
+        "allEvidence": 178,
+        "answerEligible": 319,
+        "answerPresent": 24,
+        "tokens": 91504
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 909,
+        "allEvidence": 695,
+        "answerEligible": 1278,
+        "answerPresent": 405,
+        "tokens": 439079
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 31,
+        "allEvidence": 16,
+        "answerEligible": 63,
+        "answerPresent": 3,
+        "tokens": 26335
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 149,
+        "allEvidence": 15,
+        "answerEligible": 201,
+        "answerPresent": 24,
+        "tokens": 80645
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 522,
+        "allEvidence": 486,
+        "answerEligible": 695,
+        "answerPresent": 354,
+        "tokens": 240595
+      }
+    },
+    "whole@600": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 224,
+        "allEvidence": 192,
+        "answerEligible": 319,
+        "answerPresent": 27,
+        "tokens": 184669
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 1069,
+        "allEvidence": 787,
+        "answerEligible": 1278,
+        "answerPresent": 480,
+        "tokens": 886137
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 40,
+        "allEvidence": 19,
+        "answerEligible": 63,
+        "answerPresent": 6,
+        "tokens": 53123
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 216,
+        "allEvidence": 23,
+        "answerEligible": 201,
+        "answerPresent": 39,
+        "tokens": 162790
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 589,
+        "allEvidence": 553,
+        "answerEligible": 695,
+        "answerPresent": 408,
+        "tokens": 485555
+      }
+    },
+    "brief@600": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 224,
+        "allEvidence": 192,
+        "answerEligible": 319,
+        "answerPresent": 27,
+        "tokens": 184674
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 1069,
+        "allEvidence": 787,
+        "answerEligible": 1278,
+        "answerPresent": 480,
+        "tokens": 886131
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 40,
+        "allEvidence": 19,
+        "answerEligible": 63,
+        "answerPresent": 6,
+        "tokens": 53119
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 216,
+        "allEvidence": 23,
+        "answerEligible": 201,
+        "answerPresent": 39,
+        "tokens": 162791
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 589,
+        "allEvidence": 553,
+        "answerEligible": 695,
+        "answerPresent": 408,
+        "tokens": 485547
+      }
+    },
+    "whole@1200": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 257,
+        "allEvidence": 221,
+        "answerEligible": 319,
+        "answerPresent": 34,
+        "tokens": 371320
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 1252,
+        "allEvidence": 887,
+        "answerEligible": 1278,
+        "answerPresent": 544,
+        "tokens": 1780578
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 53,
+        "allEvidence": 21,
+        "answerEligible": 63,
+        "answerPresent": 7,
+        "tokens": 106608
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 298,
+        "allEvidence": 40,
+        "answerEligible": 201,
+        "answerPresent": 54,
+        "tokens": 327043
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 644,
+        "allEvidence": 605,
+        "answerEligible": 695,
+        "answerPresent": 449,
+        "tokens": 975607
+      }
+    },
+    "brief@1200": {
+      "temporal": {
+        "questions": 320,
+        "evidenceTotal": 374,
+        "evidenceFound": 257,
+        "allEvidence": 221,
+        "answerEligible": 319,
+        "answerPresent": 34,
+        "tokens": 371324
+      },
+      "all": {
+        "questions": 1535,
+        "evidenceTotal": 2359,
+        "evidenceFound": 1252,
+        "allEvidence": 887,
+        "answerEligible": 1278,
+        "answerPresent": 544,
+        "tokens": 1780556
+      },
+      "open-domain": {
+        "questions": 92,
+        "evidenceTotal": 208,
+        "evidenceFound": 53,
+        "allEvidence": 21,
+        "answerEligible": 63,
+        "answerPresent": 7,
+        "tokens": 106607
+      },
+      "multi-hop": {
+        "questions": 282,
+        "evidenceTotal": 882,
+        "evidenceFound": 298,
+        "allEvidence": 40,
+        "answerEligible": 201,
+        "answerPresent": 54,
+        "tokens": 327045
+      },
+      "single-hop": {
+        "questions": 841,
+        "evidenceTotal": 895,
+        "evidenceFound": 644,
+        "allEvidence": 605,
+        "answerEligible": 695,
+        "answerPresent": 449,
+        "tokens": 975580
+      }
+    }
+  }
+}
